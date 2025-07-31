@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Sidebar from '../components/Sidebar';
-import { useAuth } from '../context/AuthContext';
 import API_BASE from '../utils/api';
 import '../css/dashboard.css';
 
@@ -16,29 +15,15 @@ const ProjectsPage = () => {
   const [editedProject, setEditedProject] = useState({});
   const [selectedFontIds, setSelectedFontIds] = useState({});
 
-  // ✅ Auth context
-  const { user, token } = useAuth();
-
-  // ✅ Fetch projects & fonts only when token is available
   useEffect(() => {
-    if (!token) return; // ⛔ Don't fetch until token exists
     fetchProjects();
     fetchFonts();
-  }, [token]);
+  }, []);
 
   const fetchProjects = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/projects`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      // ✅ Show all projects for admin, filter for regular users
-      const visibleProjects =
-        user?.role === 'admin'
-          ? res.data
-          : res.data.filter((p) => p.ownerId === user?.id);
-
-      setProjects(visibleProjects);
+      const res = await axios.get(`${API_BASE}/projects`);
+      setProjects(res.data);
     } catch (err) {
       console.error('❌ Error fetching projects:', err);
     } finally {
@@ -48,9 +33,7 @@ const ProjectsPage = () => {
 
   const fetchFonts = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/fonts`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(`${API_BASE}/fonts`);
       setFonts(res.data);
     } catch (err) {
       console.error('❌ Error fetching fonts:', err);
@@ -60,9 +43,7 @@ const ProjectsPage = () => {
   const createProject = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${API_BASE}/projects`, newProject, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.post(`${API_BASE}/projects`, newProject);
       setProjects([...projects, res.data]);
       setNewProject({ name: '', url: '', description: '' });
     } catch (err) {
@@ -72,9 +53,7 @@ const ProjectsPage = () => {
 
   const updateProject = async (id) => {
     try {
-      const res = await axios.put(`${API_BASE}/projects/${id}`, editedProject, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.put(`${API_BASE}/projects/${id}`, editedProject);
       setProjects(projects.map((p) => (p._id === id ? res.data : p)));
       setEditingId(null);
     } catch (err) {
@@ -84,9 +63,7 @@ const ProjectsPage = () => {
 
   const deleteProject = async (id) => {
     try {
-      await axios.delete(`${API_BASE}/projects/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(`${API_BASE}/projects/${id}`);
       setProjects(projects.filter((p) => p._id !== id));
     } catch (err) {
       console.error('❌ Error deleting project:', err);
@@ -95,11 +72,7 @@ const ProjectsPage = () => {
 
   const assignFont = async (projectId, fontId) => {
     try {
-      await axios.post(
-        `${API_BASE}/projects/${projectId}/fonts`,
-        { fontId },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.post(`${API_BASE}/projects/${projectId}/fonts`, { fontId });
       fetchProjects();
     } catch (err) {
       console.error('❌ Error assigning font:', err);
@@ -108,9 +81,7 @@ const ProjectsPage = () => {
 
   const removeFont = async (projectId, fontId) => {
     try {
-      await axios.delete(`${API_BASE}/projects/${projectId}/fonts/${fontId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(`${API_BASE}/projects/${projectId}/fonts/${fontId}`);
       fetchProjects();
     } catch (err) {
       console.error('❌ Error removing font:', err);
