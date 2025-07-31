@@ -1,6 +1,5 @@
 // src/pages/ProjectsPage.js
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Sidebar from '../components/Sidebar';
 import API_BASE from '../utils/api';
@@ -15,7 +14,7 @@ const ProjectsPage = () => {
   const [editedProject, setEditedProject] = useState({});
   const [selectedFontIds, setSelectedFontIds] = useState({});
 
-  // ✅ Get token directly from localStorage (without touching AuthContext)
+  // ✅ Get token if available
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -25,12 +24,14 @@ const ProjectsPage = () => {
 
   const fetchProjects = async () => {
     try {
+      console.log("🔍 Fetching projects with token:", token);
       const res = await axios.get(`${API_BASE}/projects`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {} // ✅ Add token if exists
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
+      console.log("📦 Projects API response:", res.data);
       setProjects(res.data);
     } catch (err) {
-      console.error('❌ Error fetching projects:', err);
+      console.error('❌ Error fetching projects:', err.response ? err.response.data : err.message);
     } finally {
       setLoading(false);
     }
@@ -38,12 +39,14 @@ const ProjectsPage = () => {
 
   const fetchFonts = async () => {
     try {
+      console.log("🔍 Fetching fonts with token:", token);
       const res = await axios.get(`${API_BASE}/fonts`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
+      console.log("🎨 Fonts API response:", res.data);
       setFonts(res.data);
     } catch (err) {
-      console.error('❌ Error fetching fonts:', err);
+      console.error('❌ Error fetching fonts:', err.response ? err.response.data : err.message);
     }
   };
 
@@ -56,7 +59,7 @@ const ProjectsPage = () => {
       setProjects([...projects, res.data]);
       setNewProject({ name: '', url: '', description: '' });
     } catch (err) {
-      console.error('❌ Error creating project:', err);
+      console.error('❌ Error creating project:', err.response ? err.response.data : err.message);
     }
   };
 
@@ -68,7 +71,7 @@ const ProjectsPage = () => {
       setProjects(projects.map((p) => (p._id === id ? res.data : p)));
       setEditingId(null);
     } catch (err) {
-      console.error('❌ Error updating project:', err);
+      console.error('❌ Error updating project:', err.response ? err.response.data : err.message);
     }
   };
 
@@ -79,7 +82,7 @@ const ProjectsPage = () => {
       });
       setProjects(projects.filter((p) => p._id !== id));
     } catch (err) {
-      console.error('❌ Error deleting project:', err);
+      console.error('❌ Error deleting project:', err.response ? err.response.data : err.message);
     }
   };
 
@@ -90,7 +93,7 @@ const ProjectsPage = () => {
       });
       fetchProjects();
     } catch (err) {
-      console.error('❌ Error assigning font:', err);
+      console.error('❌ Error assigning font:', err.response ? err.response.data : err.message);
     }
   };
 
@@ -101,7 +104,7 @@ const ProjectsPage = () => {
       });
       fetchProjects();
     } catch (err) {
-      console.error('❌ Error removing font:', err);
+      console.error('❌ Error removing font:', err.response ? err.response.data : err.message);
     }
   };
 
@@ -112,7 +115,138 @@ const ProjectsPage = () => {
       <Sidebar />
       <div className="dashboard-content p-6 flex-1">
         <h1 className="text-2xl font-bold mb-6">Projects</h1>
-        {/* rest of your component unchanged */}
+
+        {/* Create Project Form */}
+        <form onSubmit={createProject} className="bg-white shadow-md rounded-lg p-6 mb-10">
+          <h2 className="text-xl font-semibold mb-4">Create New Project</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <input
+              type="text"
+              placeholder="Project Name"
+              value={newProject.name}
+              onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+              className="border px-4 py-2 rounded shadow-sm"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Project URL"
+              value={newProject.url}
+              onChange={(e) => setNewProject({ ...newProject, url: e.target.value })}
+              className="border px-4 py-2 rounded shadow-sm"
+            />
+            <input
+              type="text"
+              placeholder="Description"
+              value={newProject.description}
+              onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+              className="border px-4 py-2 rounded shadow-sm"
+            />
+          </div>
+          <button type="submit" className="mt-4 px-6 py-2 bg-blue-600 text-white rounded shadow">
+            Create Project
+          </button>
+        </form>
+
+        {/* Projects List */}
+        {projects.map((project) => (
+          <div key={project._id} className="bg-white shadow-md rounded-lg p-6 mb-6">
+            {editingId === project._id ? (
+              <>
+                <input
+                  type="text"
+                  value={editedProject.name}
+                  onChange={(e) => setEditedProject({ ...editedProject, name: e.target.value })}
+                  className="border px-4 py-2 rounded shadow-sm mb-2"
+                />
+                <input
+                  type="text"
+                  value={editedProject.url}
+                  onChange={(e) => setEditedProject({ ...editedProject, url: e.target.value })}
+                  className="border px-4 py-2 rounded shadow-sm mb-2"
+                />
+                <input
+                  type="text"
+                  value={editedProject.description}
+                  onChange={(e) => setEditedProject({ ...editedProject, description: e.target.value })}
+                  className="border px-4 py-2 rounded shadow-sm mb-2"
+                />
+                <button onClick={() => updateProject(project._id)} className="mr-2 px-4 py-2 bg-green-600 text-white rounded">Save</button>
+                <button onClick={() => setEditingId(null)} className="px-4 py-2 bg-gray-500 text-white rounded">Cancel</button>
+              </>
+            ) : (
+              <>
+                <h3 className="text-lg font-semibold">{project.name}</h3>
+                <p>{project.url}</p>
+                <p>{project.description}</p>
+
+                {/* Font Assignment */}
+                <select
+                  value={selectedFontIds[project._id] || ''}
+                  onChange={(e) =>
+                    setSelectedFontIds({ ...selectedFontIds, [project._id]: e.target.value })
+                  }
+                  className="border px-4 py-2 rounded shadow-sm mt-2"
+                >
+                  <option value="">Assign a font</option>
+                  {fonts.map((font) => (
+                    <option key={font._id} value={font._id}>
+                      {font.fullName}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={() => {
+                    if (selectedFontIds[project._id]) {
+                      assignFont(project._id, selectedFontIds[project._id]);
+                    }
+                  }}
+                  className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
+                >
+                  Add Font
+                </button>
+
+                {/* Assigned Fonts */}
+                <ul className="mt-4">
+                  {project.fonts?.map((font) => (
+                    <li key={font._id} className="flex items-center justify-between border-b py-1">
+                      {font.fullName}
+                      <button
+                        onClick={() => removeFont(project._id, font._id)}
+                        className="text-red-500"
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Edit / Delete */}
+                <div className="mt-4">
+                  <button
+                    onClick={() => {
+                      setEditingId(project._id);
+                      setEditedProject({
+                        name: project.name,
+                        url: project.url,
+                        description: project.description,
+                      });
+                    }}
+                    className="mr-2 px-4 py-2 bg-yellow-500 text-white rounded"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => deleteProject(project._id)}
+                    className="px-4 py-2 bg-red-600 text-white rounded"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
