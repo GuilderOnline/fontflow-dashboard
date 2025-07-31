@@ -180,7 +180,7 @@ const ProjectsPage = () => {
                     if (selectedFontIds[project._id]) {
                       assignFont(project._id, selectedFontIds[project._id]);
                     }
-                  }}
+                  }} 
                   className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
                 >
                   Add Font
