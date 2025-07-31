@@ -19,49 +19,43 @@ const DashboardPage = () => {
   const [lineHeight, setLineHeight] = useState(1.4);
   const [fontLoaded, setFontLoaded] = useState(false);
 
-  // Fetch fonts for logged-in user or all fonts for admin
+  /** 
+   * 📡 Fetch fonts — fixed to avoid running without token 
+   * This is where your 401 was coming from before
+   */
   useEffect(() => {
-  const fetchFonts = async () => {
-    try {
-      const endpoint = user?.role === 'admin' ? '/fonts' : '/fonts/user';
-
-      console.log("📡 Fetching fonts from:", `${API_BASE_URL}${endpoint}`);
-      console.log("🔑 Using token:", token);
-
-      const res = await axios.get(`${API_BASE_URL}${endpoint}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      console.log("📦 Raw Axios Response:", res);
-      console.log("📦 Fonts API raw response data:", res.data);
-
-      // Check if each font object has a usable URL
-      res.data.forEach((font, idx) => {
-        console.log(`🆔 Font[${idx}] ID:`, font._id);
-        console.log(`📛 Font[${idx}] Name:`, font.fullName || font.name);
-        console.log(`🔗 Font[${idx}] URL field:`, font.url);
-        console.log(`🔗 Font[${idx}] Original download:`, font.originalDownloadUrl);
-        console.log(`🔗 Font[${idx}] WOFF2 download:`, font.woff2DownloadUrl);
-      });
-
-      setFonts(res.data);
-    } catch (err) {
-      console.error('❌ Error fetching fonts:', err);
+    if (!user || !token) {
+      console.warn("⏳ Waiting for user + token before fetching fonts...");
+      return;
     }
-  };
 
-  if (token && user) {
+    const fetchFonts = async () => {
+      try {
+        const endpoint = '/fonts'; // ✅ Use same route for admin & user
+        console.log("📡 Fetching fonts from:", `${API_BASE_URL}${endpoint}`);
+        console.log("🔑 Using token:", token);
+
+        const res = await axios.get(`${API_BASE_URL}${endpoint}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        console.log("📦 Fonts API raw response data:", res.data);
+        setFonts(res.data);
+      } catch (err) {
+        console.error('❌ Error fetching fonts:', err.response?.data || err);
+      }
+    };
+
     fetchFonts();
-  }
-}, [user, token]);
+  }, [user, token]);
 
-
-
-  // Load font dynamically for preview
+  /** 
+   * 🎯 Load font dynamically for preview modal
+   */
   useEffect(() => {
     if (!previewFont?.url) return;
-    console.log(`🎯 Loading font from: ${previewFont.url}`);
 
+    console.log(`🎯 Loading font from: ${previewFont.url}`);
     setFontLoaded(false);
 
     const fontFace = new FontFace(previewFont.fullName, `url(${previewFont.url})`);
@@ -122,13 +116,12 @@ const DashboardPage = () => {
     }
   };
 
-  // Open preview modal (use correct signed URL)
+  // Open preview modal (choose correct signed URL)
   const openPreview = (font) => {
     const fontName = font.family || font.fullName || font.name;
 
     setPreviewFont({
       ...font,
-      // ✅ Use whichever signed URL is available
       url:
         font.previewUrl ||
         font.signedUrl ||
@@ -193,30 +186,14 @@ const DashboardPage = () => {
                     <a
                       href={font.originalDownloadUrl}
                       download
-                      style={{
-                        padding: '5px 10px',
-                        background: '#4cafef',
-                        color: 'white',
-                        borderRadius: '4px',
-                        textDecoration: 'none',
-                        display: 'inline-block',
-                        marginRight: '6px'
-                      }}
+                      style={{ padding: '5px 10px', background: '#4cafef', color: 'white', borderRadius: '4px', textDecoration: 'none', marginRight: '6px' }}
                     >
                       Download Original
                     </a>{' '}
                     <a
                       href={font.woff2DownloadUrl}
                       download
-                      style={{
-                        padding: '5px 10px',
-                        background: '#28a745',
-                        color: 'white',
-                        borderRadius: '4px',
-                        textDecoration: 'none',
-                        display: 'inline-block',
-                        marginRight: '6px'
-                      }}
+                      style={{ padding: '5px 10px', background: '#28a745', color: 'white', borderRadius: '4px', textDecoration: 'none', marginRight: '6px' }}
                     >
                       Download WOFF2
                     </a>{' '}
@@ -233,36 +210,11 @@ const DashboardPage = () => {
           <div className="font-preview-overlay" onClick={closePreview}>
             <div className="font-preview-modal" onClick={(e) => e.stopPropagation()}>
               <div className="preview-controls">
-                <label>
-                  Text:
-                  <input value={previewText} onChange={(e) => setPreviewText(e.target.value)} />
-                </label>
-                <label>
-                  Size:
-                  <input
-                    type="number"
-                    value={fontSize}
-                    onChange={(e) => setFontSize(Number(e.target.value))}
-                  />
-                </label>
-                <label>
-                  Text Color:
-                  <input type="color" value={color} onChange={(e) => setColor(e.target.value)} />
-                </label>
-                <label>
-                  Background:
-                  <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} />
-                </label>
-                <label>
-                  Line Height:
-                  <input
-                    type="number"
-                    step="0.1"
-                    min="1"
-                    value={lineHeight}
-                    onChange={(e) => setLineHeight(Number(e.target.value))}
-                  />
-                </label>
+                <label>Text:<input value={previewText} onChange={(e) => setPreviewText(e.target.value)} /></label>
+                <label>Size:<input type="number" value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} /></label>
+                <label>Text Color:<input type="color" value={color} onChange={(e) => setColor(e.target.value)} /></label>
+                <label>Background:<input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} /></label>
+                <label>Line Height:<input type="number" step="0.1" min="1" value={lineHeight} onChange={(e) => setLineHeight(Number(e.target.value))} /></label>
                 <button onClick={closePreview}>Close</button>
               </div>
 
