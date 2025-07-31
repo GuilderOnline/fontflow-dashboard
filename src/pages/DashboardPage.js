@@ -163,9 +163,15 @@ const DashboardPage = () => {
                   <td>{font.license}</td>
                   <td>{new Date(font.createdAt).toLocaleString()}</td>
                   <td>
-                    <button onClick={() => openPreview(font)}>Preview</button>{' '}
-                    <button onClick={() => deleteFont(font._id)}>Delete</button>
-                  </td>
+  <button onClick={() => openPreview(font)}>Preview</button>{' '}
+  <a href={font.originalDownloadUrl} download>
+    <button>Download Original</button>
+  </a>{' '}
+  <a href={font.woff2DownloadUrl} download>
+    <button>Download WOFF2</button>
+  </a>{' '}
+  <button onClick={() => deleteFont(font._id)}>Delete</button>
+</td>
                 </tr>
               ))}
             </tbody>
