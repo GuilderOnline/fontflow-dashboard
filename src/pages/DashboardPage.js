@@ -27,6 +27,7 @@ const DashboardPage = () => {
         const res = await axios.get(`${API_BASE_URL}${endpoint}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        console.log("📦 Fonts from API:", res.data);
         setFonts(res.data);
       } catch (err) {
         console.error('❌ Error fetching fonts:', err);
@@ -40,8 +41,9 @@ const DashboardPage = () => {
 
   // Load font dynamically for preview
   useEffect(() => {
-      console.log("📦 Fonts from API:", fonts);
-    if (!previewFont) return;
+    if (!previewFont?.url) return;
+    console.log(`🎯 Loading font from: ${previewFont.url}`);
+
     setFontLoaded(false);
 
     const fontFace = new FontFace(previewFont.fullName, `url(${previewFont.url})`);
@@ -102,13 +104,18 @@ const DashboardPage = () => {
     }
   };
 
-  // Open preview modal (now using signed URL from backend)
+  // Open preview modal (use correct signed URL)
   const openPreview = (font) => {
     const fontName = font.family || font.fullName || font.name;
 
     setPreviewFont({
       ...font,
-      url: font.url, // ✅ Use signed URL directly
+      // ✅ Use whichever signed URL is available
+      url:
+        font.previewUrl ||
+        font.signedUrl ||
+        font.woff2DownloadUrl ||
+        font.originalDownloadUrl,
       fullName: fontName,
     });
 
@@ -164,42 +171,39 @@ const DashboardPage = () => {
                   <td>{font.license}</td>
                   <td>{new Date(font.createdAt).toLocaleString()}</td>
                   <td>
-  <button onClick={() => openPreview(font)}>Preview</button>{' '}
-  
-  <a
-    href={font.originalDownloadUrl}
-    download
-    style={{
-      padding: '5px 10px',
-      background: '#4cafef',
-      color: 'white',
-      borderRadius: '4px',
-      textDecoration: 'none',
-      display: 'inline-block',
-      marginRight: '6px'
-    }}
-  >
-    Download Original
-  </a>{' '}
-  
-  <a
-    href={font.woff2DownloadUrl}
-    download
-    style={{
-      padding: '5px 10px',
-      background: '#28a745',
-      color: 'white',
-      borderRadius: '4px',
-      textDecoration: 'none',
-      display: 'inline-block',
-      marginRight: '6px'
-    }}
-  >
-    Download WOFF2
-  </a>{' '}
-  
-  <button onClick={() => deleteFont(font._id)}>Delete</button>
-</td>
+                    <button onClick={() => openPreview(font)}>Preview</button>{' '}
+                    <a
+                      href={font.originalDownloadUrl}
+                      download
+                      style={{
+                        padding: '5px 10px',
+                        background: '#4cafef',
+                        color: 'white',
+                        borderRadius: '4px',
+                        textDecoration: 'none',
+                        display: 'inline-block',
+                        marginRight: '6px'
+                      }}
+                    >
+                      Download Original
+                    </a>{' '}
+                    <a
+                      href={font.woff2DownloadUrl}
+                      download
+                      style={{
+                        padding: '5px 10px',
+                        background: '#28a745',
+                        color: 'white',
+                        borderRadius: '4px',
+                        textDecoration: 'none',
+                        display: 'inline-block',
+                        marginRight: '6px'
+                      }}
+                    >
+                      Download WOFF2
+                    </a>{' '}
+                    <button onClick={() => deleteFont(font._id)}>Delete</button>
+                  </td>
                 </tr>
               ))}
             </tbody>
