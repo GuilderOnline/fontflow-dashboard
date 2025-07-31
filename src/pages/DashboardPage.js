@@ -40,6 +40,7 @@ const DashboardPage = () => {
 
   // Load font dynamically for preview
   useEffect(() => {
+      console.log("📦 Fonts from API:", fonts);
     if (!previewFont) return;
     setFontLoaded(false);
 
