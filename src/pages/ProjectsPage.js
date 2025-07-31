@@ -1,6 +1,5 @@
 // src/pages/ProjectsPage.js
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Sidebar from '../components/Sidebar';
 import API_BASE from '../utils/api';
@@ -15,6 +14,7 @@ const ProjectsPage = () => {
   const [editedProject, setEditedProject] = useState({});
   const [selectedFontIds, setSelectedFontIds] = useState({});
 
+  // ✅ Fetch projects and fonts without auth
   useEffect(() => {
     fetchProjects();
     fetchFonts();
@@ -151,8 +151,18 @@ const ProjectsPage = () => {
                   onChange={(e) => setEditedProject({ ...editedProject, description: e.target.value })}
                   className="border px-4 py-2 rounded shadow-sm mb-2"
                 />
-                <button onClick={() => updateProject(project._id)} className="mr-2 px-4 py-2 bg-green-600 text-white rounded">Save</button>
-                <button onClick={() => setEditingId(null)} className="px-4 py-2 bg-gray-500 text-white rounded">Cancel</button>
+                <button
+                  onClick={() => updateProject(project._id)}
+                  className="mr-2 px-4 py-2 bg-green-600 text-white rounded"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => setEditingId(null)}
+                  className="px-4 py-2 bg-gray-500 text-white rounded"
+                >
+                  Cancel
+                </button>
               </>
             ) : (
               <>
@@ -180,7 +190,7 @@ const ProjectsPage = () => {
                     if (selectedFontIds[project._id]) {
                       assignFont(project._id, selectedFontIds[project._id]);
                     }
-                  }} 
+                  }}
                   className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
                 >
                   Add Font
