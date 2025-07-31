@@ -24,15 +24,25 @@ const DashboardPage = () => {
   const fetchFonts = async () => {
     try {
       const endpoint = user?.role === 'admin' ? '/fonts' : '/fonts/user';
-      console.log(`📡 Fetching fonts from: ${API_BASE_URL}${endpoint}`);
-      console.log(`🔑 Using token:`, token);
+
+      console.log("📡 Fetching fonts from:", `${API_BASE_URL}${endpoint}`);
+      console.log("🔑 Using token:", token);
 
       const res = await axios.get(`${API_BASE_URL}${endpoint}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log("📦 Fonts API raw response:", res);
-      console.log("📦 Fonts from API:", res.data);
+      console.log("📦 Raw Axios Response:", res);
+      console.log("📦 Fonts API raw response data:", res.data);
+
+      // Check if each font object has a usable URL
+      res.data.forEach((font, idx) => {
+        console.log(`🆔 Font[${idx}] ID:`, font._id);
+        console.log(`📛 Font[${idx}] Name:`, font.fullName || font.name);
+        console.log(`🔗 Font[${idx}] URL field:`, font.url);
+        console.log(`🔗 Font[${idx}] Original download:`, font.originalDownloadUrl);
+        console.log(`🔗 Font[${idx}] WOFF2 download:`, font.woff2DownloadUrl);
+      });
 
       setFonts(res.data);
     } catch (err) {
@@ -41,12 +51,10 @@ const DashboardPage = () => {
   };
 
   if (token && user) {
-    console.log("✅ User & token present, starting font fetch...");
     fetchFonts();
-  } else {
-    console.warn("⚠️ No user or token, skipping font fetch.");
   }
 }, [user, token]);
+
 
 
   // Load font dynamically for preview
