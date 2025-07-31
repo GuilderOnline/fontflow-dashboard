@@ -21,23 +21,33 @@ const DashboardPage = () => {
 
   // Fetch fonts for logged-in user or all fonts for admin
   useEffect(() => {
-    const fetchFonts = async () => {
-      try {
-        const endpoint = user?.role === 'admin' ? '/fonts' : '/fonts/user';
-        const res = await axios.get(`${API_BASE_URL}${endpoint}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        console.log("📦 Fonts from API:", res.data);
-        setFonts(res.data);
-      } catch (err) {
-        console.error('❌ Error fetching fonts:', err);
-      }
-    };
+  const fetchFonts = async () => {
+    try {
+      const endpoint = user?.role === 'admin' ? '/fonts' : '/fonts/user';
+      console.log(`📡 Fetching fonts from: ${API_BASE_URL}${endpoint}`);
+      console.log(`🔑 Using token:`, token);
 
-    if (token && user) {
-      fetchFonts();
+      const res = await axios.get(`${API_BASE_URL}${endpoint}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log("📦 Fonts API raw response:", res);
+      console.log("📦 Fonts from API:", res.data);
+
+      setFonts(res.data);
+    } catch (err) {
+      console.error('❌ Error fetching fonts:', err);
     }
-  }, [user, token]);
+  };
+
+  if (token && user) {
+    console.log("✅ User & token present, starting font fetch...");
+    fetchFonts();
+  } else {
+    console.warn("⚠️ No user or token, skipping font fetch.");
+  }
+}, [user, token]);
+
 
   // Load font dynamically for preview
   useEffect(() => {
