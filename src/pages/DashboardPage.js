@@ -24,10 +24,37 @@ const DashboardPage = () => {
    * This is where your 401 was coming from before
    */
   useEffect(() => {
-    if (!user || !token) {
-      console.warn("⏳ Waiting for user + token before fetching fonts...");
-      return;
+  if (!user || !token) {
+    console.warn("⏳ Waiting for user + token before fetching fonts...");
+    return;
+  }
+
+  const fetchFonts = async () => {
+    try {
+      console.log("🔍 Fetching fonts with token:", token);
+
+      const res = await axios.get(`${API_BASE}/fonts`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log("📦 Fonts from API:", res.data);
+
+      res.data.forEach((font, index) => {
+        console.log(`--- FONT #${index + 1} ---`);
+        console.log("🆔 ID:", font._id);
+        console.log("📛 Name:", font.name);
+        console.log("📜 Original URL:", font.originalDownloadUrl);
+        console.log("📜 WOFF2 URL:", font.woff2DownloadUrl);
+      });
+
+      setFonts(res.data);
+    } catch (err) {
+      console.error("❌ Error fetching fonts:", err);
     }
+  };
+
+  fetchFonts();
+}, [user, token]);
 
     const fetchFonts = async () => {
       try {
