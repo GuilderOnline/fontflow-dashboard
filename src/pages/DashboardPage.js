@@ -211,35 +211,26 @@ const DashboardPage = () => {
                   <td>{new Date(font.createdAt).toLocaleString()}</td>
                   <td>
                     <button onClick={() => openPreview(font)}>Preview</button>{" "}
-                    <a
-                      href={font.originalFile}
-                      download
-                      style={{
-                        padding: "5px 10px",
-                        background: "#4cafef",
-                        color: "white",
-                        borderRadius: "4px",
-                        textDecoration: "none",
-                        marginRight: "6px",
-                      }}
-                    >
-                      Download Original
-                    </a>{" "}
-                    {font.woff2File && (
-                      <a
-                        href={font.woff2File}
-                        download
-                        style={{
-                          padding: "5px 10px",
-                          background: "#28a745",
-                          color: "white",
-                          borderRadius: "4px",
-                          textDecoration: "none",
-                          marginRight: "6px",
-                        }}
-                      >
-                        Download WOFF2
-                      </a>
+                    {/* WOFF2 download */}
+  {font.woff2DownloadUrl && (
+    <a
+      href={font.woff2DownloadUrl}
+      download={`${font.name || 'font'}.woff2`}
+      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 mr-2"
+    >
+      WOFF2
+    </a>
+  )}
+
+  {/* Original download */}
+  {font.originalDownloadUrl && (
+    <a
+      href={font.originalDownloadUrl}
+      download={`${font.name || 'font'}`}
+      className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+    >
+      Original
+    </a>
                     )}
                     <button onClick={() => deleteFont(font._id)}>Delete</button>
                   </td>
