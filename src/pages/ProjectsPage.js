@@ -105,18 +105,21 @@ const ProjectsPage = () => {
   };
 
   const generateCodeForProject = async (projectId) => {
-    console.log("Generating code for project ID:", projectId);  // Log to confirm it's triggered
+  console.log("Generating code for project ID:", projectId);  // Log to confirm it's triggered
   try {
-      const res = await axios.get(`${API_BASE}/projects/${projectId}/generate-code`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      });
-          console.log("Generated Code Response:", res.data); 
+    const res = await axios.get(`${API_BASE}/projects/${projectId}/generate-code`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+    
+    console.log("Generated Code Response:", res.data);  // Log the response to check URLs
 
-      setGeneratedCode({ embedCode: res.data.embedCode, cssCode: res.data.cssCode });
-    } catch (err) {
-      console.error('❌ Error generating code:', err.response ? err.response.data : err.message);
-    }
-  };
+    // Set the generated embed and CSS code in state
+    setGeneratedCode({ embedCode: res.data.embedCode, cssCode: res.data.cssCode });
+  } catch (err) {
+    console.error('❌ Error generating code:', err.response ? err.response.data : err.message);
+  }
+};
+
 
   if (loading) return <div>Loading projects...</div>;
 
