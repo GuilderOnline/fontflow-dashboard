@@ -1,82 +1,66 @@
-import React, { useEffect, useState } from 'react';
-import Sidebar from '../components/Sidebar';
-import '../css/dashboard.css';
-import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
+import React, { useEffect, useState } from "react";
+import Sidebar from "../components/Sidebar";
+import "../css/dashboard.css";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE || 'http://localhost:4000/api';
+  process.env.REACT_APP_API_BASE || "http://localhost:4000/api";
 
 const DashboardPage = () => {
   const { user, token } = useAuth();
   const [fonts, setFonts] = useState([]);
-  const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState({
+    key: "createdAt",
+    direction: "desc",
+  });
   const [previewFont, setPreviewFont] = useState(null);
-  const [previewText, setPreviewText] = useState('The quick brown fox jumps over the lazy dog');
+  const [previewText, setPreviewText] = useState(
+    "The quick brown fox jumps over the lazy dog"
+  );
   const [fontSize, setFontSize] = useState(48);
-  const [color, setColor] = useState('#000000');
-  const [bgColor, setBgColor] = useState('#ffffff');
+  const [color, setColor] = useState("#000000");
+  const [bgColor, setBgColor] = useState("#ffffff");
   const [lineHeight, setLineHeight] = useState(1.4);
   const [fontLoaded, setFontLoaded] = useState(false);
 
-  /** 
-   * 📡 Fetch fonts — fixed to avoid running without token 
-   * This is where your 401 was coming from before
+  /**
+   * 📡 Fetch fonts — runs only when user & token exist
    */
   useEffect(() => {
-  if (!user || !token) {
-    console.warn("⏳ Waiting for user + token before fetching fonts...");
-    return;
-  }
-
-  const fetchFonts = async () => {
-    try {
-      console.log("🔍 Fetching fonts with token:", token);
-
-      const res = await axios.get(`${API_BASE}/fonts`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      console.log("📦 Fonts from API:", res.data);
-
-      res.data.forEach((font, index) => {
-        console.log(`--- FONT #${index + 1} ---`);
-        console.log("🆔 ID:", font._id);
-        console.log("📛 Name:", font.name);
-        console.log("📜 Original URL:", font.originalDownloadUrl);
-        console.log("📜 WOFF2 URL:", font.woff2DownloadUrl);
-      });
-
-      setFonts(res.data);
-    } catch (err) {
-      console.error("❌ Error fetching fonts:", err);
+    if (!user || !token) {
+      console.warn("⏳ Waiting for user + token before fetching fonts...");
+      return;
     }
-  };
-
-  fetchFonts();
-}, [user, token]);
 
     const fetchFonts = async () => {
       try {
-        const endpoint = '/fonts'; // ✅ Use same route for admin & user
-        console.log("📡 Fetching fonts from:", `${API_BASE_URL}${endpoint}`);
-        console.log("🔑 Using token:", token);
+        console.log("🔍 Fetching fonts with token:", token);
 
-        const res = await axios.get(`${API_BASE_URL}${endpoint}`, {
+        const res = await axios.get(`${API_BASE_URL}/fonts`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        console.log("📦 Fonts API raw response data:", res.data);
+        console.log("📦 Fonts from API:", res.data);
+
+        res.data.forEach((font, index) => {
+          console.log(`--- FONT #${index + 1} ---`);
+          console.log("🆔 ID:", font._id);
+          console.log("📛 Name:", font.name);
+          console.log("📜 Original URL:", font.originalDownloadUrl);
+          console.log("📜 WOFF2 URL:", font.woff2DownloadUrl);
+        });
+
         setFonts(res.data);
       } catch (err) {
-        console.error('❌ Error fetching fonts:', err.response?.data || err);
+        console.error("❌ Error fetching fonts:", err);
       }
     };
 
     fetchFonts();
   }, [user, token]);
 
-  /** 
+  /**
    * 🎯 Load font dynamically for preview modal
    */
   useEffect(() => {
@@ -85,7 +69,10 @@ const DashboardPage = () => {
     console.log(`🎯 Loading font from: ${previewFont.url}`);
     setFontLoaded(false);
 
-    const fontFace = new FontFace(previewFont.fullName, `url(${previewFont.url})`);
+    const fontFace = new FontFace(
+      previewFont.fullName,
+      `url(${previewFont.url})`
+    );
     fontFace
       .load()
       .then((loaded) => {
@@ -100,34 +87,34 @@ const DashboardPage = () => {
 
   // Sorting
   const handleSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
     }
     setSortConfig({ key, direction });
   };
 
   const getSortIndicator = (key) => {
     if (sortConfig.key === key) {
-      return sortConfig.direction === 'asc' ? '↑' : '↓';
+      return sortConfig.direction === "asc" ? "↑" : "↓";
     }
-    return '';
+    return "";
   };
 
   const sortedFonts = [...fonts].sort((a, b) => {
     const aVal = a[sortConfig.key];
     const bVal = b[sortConfig.key];
 
-    if (sortConfig.key === 'createdAt') {
-      return sortConfig.direction === 'asc'
+    if (sortConfig.key === "createdAt") {
+      return sortConfig.direction === "asc"
         ? new Date(aVal) - new Date(bVal)
         : new Date(bVal) - new Date(aVal);
     }
 
-    const aStr = aVal?.toString().toLowerCase() || '';
-    const bStr = bVal?.toString().toLowerCase() || '';
-    if (aStr < bStr) return sortConfig.direction === 'asc' ? -1 : 1;
-    if (aStr > bStr) return sortConfig.direction === 'asc' ? 1 : -1;
+    const aStr = aVal?.toString().toLowerCase() || "";
+    const bStr = bVal?.toString().toLowerCase() || "";
+    if (aStr < bStr) return sortConfig.direction === "asc" ? -1 : 1;
+    if (aStr > bStr) return sortConfig.direction === "asc" ? 1 : -1;
     return 0;
   });
 
@@ -139,7 +126,7 @@ const DashboardPage = () => {
       });
       setFonts((prev) => prev.filter((font) => font._id !== id));
     } catch (err) {
-      console.error('❌ Error deleting font:', err);
+      console.error("❌ Error deleting font:", err);
     }
   };
 
@@ -157,10 +144,10 @@ const DashboardPage = () => {
       fullName: fontName,
     });
 
-    setPreviewText('The quick brown fox jumps over the lazy dog');
+    setPreviewText("The quick brown fox jumps over the lazy dog");
     setFontSize(48);
-    setColor('#000000');
-    setBgColor('#ffffff');
+    setColor("#000000");
+    setBgColor("#ffffff");
     setLineHeight(1.4);
   };
 
@@ -172,7 +159,7 @@ const DashboardPage = () => {
     <div className="dashboard-container">
       <Sidebar />
       <div className="dashboard-content">
-        <h1>Welcome, {user?.role === 'admin' ? 'Admin' : 'User'}</h1>
+        <h1>Welcome, {user?.role === "admin" ? "Admin" : "User"}</h1>
 
         {/* Summary cards */}
         <div className="summary-cards">
@@ -188,13 +175,27 @@ const DashboardPage = () => {
           <table>
             <thead>
               <tr>
-                <th onClick={() => handleSort('fullName')}>Full Name {getSortIndicator('fullName')}</th>
-                <th onClick={() => handleSort('style')}>Style {getSortIndicator('style')}</th>
-                <th onClick={() => handleSort('weight')}>Weight {getSortIndicator('weight')}</th>
-                <th onClick={() => handleSort('description')}>Description {getSortIndicator('description')}</th>
-                <th onClick={() => handleSort('manufacturer')}>Manufacturer {getSortIndicator('manufacturer')}</th>
-                <th onClick={() => handleSort('license')}>License {getSortIndicator('license')}</th>
-                <th onClick={() => handleSort('createdAt')}>Created At {getSortIndicator('createdAt')}</th>
+                <th onClick={() => handleSort("fullName")}>
+                  Full Name {getSortIndicator("fullName")}
+                </th>
+                <th onClick={() => handleSort("style")}>
+                  Style {getSortIndicator("style")}
+                </th>
+                <th onClick={() => handleSort("weight")}>
+                  Weight {getSortIndicator("weight")}
+                </th>
+                <th onClick={() => handleSort("description")}>
+                  Description {getSortIndicator("description")}
+                </th>
+                <th onClick={() => handleSort("manufacturer")}>
+                  Manufacturer {getSortIndicator("manufacturer")}
+                </th>
+                <th onClick={() => handleSort("license")}>
+                  License {getSortIndicator("license")}
+                </th>
+                <th onClick={() => handleSort("createdAt")}>
+                  Created At {getSortIndicator("createdAt")}
+                </th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -209,39 +210,39 @@ const DashboardPage = () => {
                   <td>{font.license}</td>
                   <td>{new Date(font.createdAt).toLocaleString()}</td>
                   <td>
-  <button onClick={() => openPreview(font)}>Preview</button>{" "}
-  <a
-    href={font.originalFile}
-    download
-    style={{
-      padding: "5px 10px",
-      background: "#4cafef",
-      color: "white",
-      borderRadius: "4px",
-      textDecoration: "none",
-      marginRight: "6px"
-    }}
-  >
-    Download Original
-  </a>{" "}
-  {font.woff2File && (
-    <a
-      href={font.woff2File}
-      download
-      style={{
-        padding: "5px 10px",
-        background: "#28a745",
-        color: "white",
-        borderRadius: "4px",
-        textDecoration: "none",
-        marginRight: "6px"
-      }}
-    >
-      Download WOFF2
-    </a>
-  )}
-  <button onClick={() => deleteFont(font._id)}>Delete</button>
-</td>
+                    <button onClick={() => openPreview(font)}>Preview</button>{" "}
+                    <a
+                      href={font.originalFile}
+                      download
+                      style={{
+                        padding: "5px 10px",
+                        background: "#4cafef",
+                        color: "white",
+                        borderRadius: "4px",
+                        textDecoration: "none",
+                        marginRight: "6px",
+                      }}
+                    >
+                      Download Original
+                    </a>{" "}
+                    {font.woff2File && (
+                      <a
+                        href={font.woff2File}
+                        download
+                        style={{
+                          padding: "5px 10px",
+                          background: "#28a745",
+                          color: "white",
+                          borderRadius: "4px",
+                          textDecoration: "none",
+                          marginRight: "6px",
+                        }}
+                      >
+                        Download WOFF2
+                      </a>
+                    )}
+                    <button onClick={() => deleteFont(font._id)}>Delete</button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -251,13 +252,56 @@ const DashboardPage = () => {
         {/* Font preview modal */}
         {previewFont && (
           <div className="font-preview-overlay" onClick={closePreview}>
-            <div className="font-preview-modal" onClick={(e) => e.stopPropagation()}>
+            <div
+              className="font-preview-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="preview-controls">
-                <label>Text:<input value={previewText} onChange={(e) => setPreviewText(e.target.value)} /></label>
-                <label>Size:<input type="number" value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} /></label>
-                <label>Text Color:<input type="color" value={color} onChange={(e) => setColor(e.target.value)} /></label>
-                <label>Background:<input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} /></label>
-                <label>Line Height:<input type="number" step="0.1" min="1" value={lineHeight} onChange={(e) => setLineHeight(Number(e.target.value))} /></label>
+                <label>
+                  Text:
+                  <input
+                    value={previewText}
+                    onChange={(e) => setPreviewText(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Size:
+                  <input
+                    type="number"
+                    value={fontSize}
+                    onChange={(e) =>
+                      setFontSize(Number(e.target.value))
+                    }
+                  />
+                </label>
+                <label>
+                  Text Color:
+                  <input
+                    type="color"
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Background:
+                  <input
+                    type="color"
+                    value={bgColor}
+                    onChange={(e) => setBgColor(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Line Height:
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="1"
+                    value={lineHeight}
+                    onChange={(e) =>
+                      setLineHeight(Number(e.target.value))
+                    }
+                  />
+                </label>
                 <button onClick={closePreview}>Close</button>
               </div>
 
@@ -269,10 +313,10 @@ const DashboardPage = () => {
                   color,
                   backgroundColor: bgColor,
                   lineHeight,
-                  padding: '2rem',
+                  padding: "2rem",
                 }}
               >
-                {!fontLoaded ? 'Loading font...' : previewText}
+                {!fontLoaded ? "Loading font..." : previewText}
               </div>
             </div>
           </div>
