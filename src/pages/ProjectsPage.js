@@ -105,10 +105,13 @@ const ProjectsPage = () => {
   };
 
   const generateCodeForProject = async (projectId) => {
-    try {
+    console.log("Generating code for project ID:", projectId);  // Log to confirm it's triggered
+  try {
       const res = await axios.get(`${API_BASE}/projects/${projectId}/generate-code`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
+          console.log("Generated Code Response:", res.data); 
+
       setGeneratedCode({ embedCode: res.data.embedCode, cssCode: res.data.cssCode });
     } catch (err) {
       console.error('❌ Error generating code:', err.response ? err.response.data : err.message);
