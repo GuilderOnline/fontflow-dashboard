@@ -1,4 +1,3 @@
-// src/pages/ProjectsPage.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Sidebar from '../components/Sidebar';
@@ -13,6 +12,7 @@ const ProjectsPage = () => {
   const [editingId, setEditingId] = useState(null);
   const [editedProject, setEditedProject] = useState({});
   const [selectedFontIds, setSelectedFontIds] = useState({});
+  const [generatedCode, setGeneratedCode] = useState({ embedCode: '', cssCode: '' });
 
   // ✅ Get token if available
   const token = localStorage.getItem('token');
@@ -24,11 +24,9 @@ const ProjectsPage = () => {
 
   const fetchProjects = async () => {
     try {
-      console.log("🔍 Fetching projects with token:", token);
       const res = await axios.get(`${API_BASE}/projects`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
-      console.log("📦 Projects API response:", res.data);
       setProjects(res.data);
     } catch (err) {
       console.error('❌ Error fetching projects:', err.response ? err.response.data : err.message);
@@ -39,11 +37,9 @@ const ProjectsPage = () => {
 
   const fetchFonts = async () => {
     try {
-      console.log("🔍 Fetching fonts with token:", token);
       const res = await axios.get(`${API_BASE}/fonts`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
-      console.log("🎨 Fonts API response:", res.data);
       setFonts(res.data);
     } catch (err) {
       console.error('❌ Error fetching fonts:', err.response ? err.response.data : err.message);
@@ -105,6 +101,17 @@ const ProjectsPage = () => {
       fetchProjects();
     } catch (err) {
       console.error('❌ Error removing font:', err.response ? err.response.data : err.message);
+    }
+  };
+
+  const generateCodeForProject = async (projectId) => {
+    try {
+      const res = await axios.get(`${API_BASE}/projects/${projectId}/generate-code`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      setGeneratedCode({ embedCode: res.data.embedCode, cssCode: res.data.cssCode });
+    } catch (err) {
+      console.error('❌ Error generating code:', err.response ? err.response.data : err.message);
     }
   };
 
@@ -242,11 +249,40 @@ const ProjectsPage = () => {
                   >
                     Delete
                   </button>
+
+                  {/* Create Code Button */}
+                  <button
+                    onClick={() => generateCodeForProject(project._id)}
+                    className="ml-4 px-4 py-2 bg-green-500 text-white rounded"
+                  >
+                    Create Code
+                  </button>
                 </div>
               </>
             )}
           </div>
         ))}
+
+        {/* Display Embed and CSS Code */}
+        {generatedCode.embedCode && (
+          <div className="mt-6 p-4 bg-white rounded shadow-md">
+            <h3 className="font-bold text-xl mb-2">Embed Code</h3>
+            <textarea
+              className="w-full p-4 border"
+              rows="6"
+              value={generatedCode.embedCode}
+              readOnly
+            ></textarea>
+
+            <h3 className="font-bold text-xl mb-2 mt-4">CSS Code</h3>
+            <textarea
+              className="w-full p-4 border"
+              rows="8"
+              value={generatedCode.cssCode}
+              readOnly
+            ></textarea>
+          </div>
+        )}
       </div>
     </div>
   );
