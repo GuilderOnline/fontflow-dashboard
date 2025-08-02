@@ -13,6 +13,7 @@ const ProjectsPage = () => {
   const [editedProject, setEditedProject] = useState({});
   const [selectedFontIds, setSelectedFontIds] = useState({});
   const [generatedCode, setGeneratedCode] = useState({ embedCode: '', cssCode: '' });
+  
 
   // ✅ Get token if available
   const token = localStorage.getItem('token');
@@ -270,25 +271,30 @@ const ProjectsPage = () => {
         ))}
 
         {/* Display Embed and CSS Code */}
-        {generatedCode.embedCode && (
-          <div className="mt-6 p-4 bg-white rounded shadow-md">
-            <h3 className="font-bold text-xl mb-2">Embed Code</h3>
-            <textarea
-              className="w-full p-4 border"
-              rows="6"
-              value={generatedCode.embedCode}
-              readOnly
-            ></textarea>
+        {(generatedCode.embedCode || generatedCode.cssCode) && (
+  <div className="mt-6">
+    <h3 className="font-bold mb-2">Generated Embed & CSS Code</h3>
+    
+    {generatedCode.embedCode && (
+      <div className="mb-4">
+        <h4 className="font-semibold">Embed Code</h4>
+        <pre className="bg-gray-100 p-3 rounded overflow-auto text-sm whitespace-pre-wrap">
+          {generatedCode.embedCode}
+        </pre>
+      </div>
+    )}
 
-            <h3 className="font-bold text-xl mb-2 mt-4">CSS Code</h3>
-            <textarea
-              className="w-full p-4 border"
-              rows="8"
-              value={generatedCode.cssCode}
-              readOnly
-            ></textarea>
-          </div>
-        )}
+    {generatedCode.cssCode && (
+      <div>
+        <h4 className="font-semibold">CSS Code</h4>
+        <pre className="bg-gray-100 p-3 rounded overflow-auto text-sm whitespace-pre-wrap">
+          {generatedCode.cssCode}
+        </pre>
+      </div>
+    )}
+  </div>
+)}
+
       </div>
     </div>
   );
