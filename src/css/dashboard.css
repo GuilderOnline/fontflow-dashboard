@@ -178,10 +178,10 @@
 .upload-message {
   margin-top: 16px;
   font-weight: 500;
-  margin-right: 600px;
+  margin-left: 600px;
   
 }
-.upload-header { margin-right: 600px;}
+.upload-header { margin-left: 600px;}
 /* ProjectsPage.css */
 
 .dashboard-container {
