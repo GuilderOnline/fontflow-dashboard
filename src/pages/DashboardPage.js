@@ -230,7 +230,7 @@ const DashboardPage = () => {
       Original
     </a>
                     )}
-                    <button onClick={() => deleteFont(font._id)}>Delete</button>
+                    <button id="del" onClick={() => deleteFont(font._id)}>Delete</button>
                   </td>
                 </tr>
               ))}
