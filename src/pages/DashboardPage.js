@@ -216,7 +216,7 @@ const DashboardPage = () => {
       download={`${font.name || 'font'}.woff2`}
       className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 mr-2"
     >
-      DOWNLOAD WOFF2
+      Download WOFF2
     </a>
   )}
 
@@ -227,7 +227,7 @@ const DashboardPage = () => {
       download={`${font.name || 'font'}`}
       className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
     >
-      DOWNLOAD Original
+      Download Original
     </a>
                     )}
                     <button id="del" onClick={() => deleteFont(font._id)}>Delete</button>

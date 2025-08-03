@@ -178,6 +178,7 @@
 .upload-message {
   margin-top: 16px;
   font-weight: 500;
+  margin-right: 600px;
 }
 /* ProjectsPage.css */
 
@@ -443,7 +444,7 @@ button#del {background-color: #e30614;}
 
 .upload-form button {
   margin-top: 1rem;
-  background-color: #10b981;
+  background-color: #f21523;
   color: white;
   padding: 0.5rem 1.5rem;
   border: none;
