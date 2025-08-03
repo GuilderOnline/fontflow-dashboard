@@ -26,10 +26,23 @@
 .sidebar-menu li {
   margin: 20px 0;
   cursor: pointer;
-  color: #e30614;
+  color: #000;
 }
 #d-link::before {
   content: url("https://fontflow-backend-vhnr.vercel.app/noun-home-5230118.png");
+  margin-left: 5px;
+}
+#u-link::before {
+  content: url("https://fontflow-backend-vhnr.vercel.app/noun-upload-6198230.png");
+  margin-left: 5px;
+}
+#p-link::before {
+  content: url("https://fontflow-backend-vhnr.vercel.app/noun-website-5361389.png");
+  margin-left: 5px;
+}
+#l-link::before {
+  content: url("https://fontflow-backend-vhnr.vercel.app/noun-logout-7867887.png");
+  margin-left: 5px;
 }
 
 .sidebar-menu li:hover {
