@@ -26,6 +26,10 @@
 .sidebar-menu li {
   margin: 20px 0;
   cursor: pointer;
+  color: #000;
+}
+.sidebar-menu li::before {
+  content:"\003E";
 }
 
 .sidebar-menu li:hover {
