@@ -58,7 +58,11 @@ const LoginPage = () => {
         <section className="welcome">
           <h1>Welcome to <strong>Font Flow</strong></h1>
           <p>Self-host and manage your fonts with ease.</p>
-          <button className="btn-primary">Get Started</button>
+          <h2>About Font Flow</h2>
+        <p>
+          Font Flow provides a reliable, privacy-friendly platform for uploading, optimizing,
+          and serving web fonts, tailored for developers and designers.
+        </p>
         </section>
 
         <section className="login-box">
@@ -97,27 +101,7 @@ const LoginPage = () => {
         </section>
       </main>
 
-      <section className="about">
-        <h2>About Font Flow</h2>
-        <p>
-          Font Flow provides a reliable, privacy-friendly platform for uploading, optimizing,
-          and serving web fonts, tailored for developers and designers.
-        </p>
-      </section>
-
-      <section className="pricing">
-        <h2>Pricing</h2>
-        <div className="plans">
-          <div className="plan">
-            <h3>Free</h3>
-            <p>Basic font hosting features to get you started</p>
-          </div>
-          <div className="plan">
-            <h3>Pro</h3>
-            <p>Advanced features for professional use</p>
-          </div>
-        </div>
-      </section>
+      
     </div>
   );
 };
