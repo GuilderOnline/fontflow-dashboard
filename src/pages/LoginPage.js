@@ -64,7 +64,7 @@ const LoginPage = () => {
           and serving web fonts, tailored for developers and designers.
         </p>
         <p>
-          Set up a basic account with us and start embedding fonts in yiur websites & apps.
+          Set up a basic account with us and start embedding fonts in your websites & apps.
           
         </p>
         <button className="btn-primary" type="submit">New Account</button>

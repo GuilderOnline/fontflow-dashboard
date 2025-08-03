@@ -13,16 +13,11 @@ const Sidebar = () => {
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-logo">FontFlow</div>
+      <div className="sidebar-logo"><img src="/fontflow-logo.png" alt="FontFlow Logo"/></div>
       <ul className="sidebar-menu">
         <li onClick={() => navigate('/dashboard')}>Dashboard</li>
         <li onClick={() => navigate('/upload')}>Upload Font</li>
         <li onClick={() => navigate('/projects')}>Projects</li>
-        <li onClick={() => navigate('/APIKeys')}>API Keys</li>
-        <li onClick={() => navigate('/settings')}>Settings</li>
-
-
-
         <li onClick={handleLogout}>Logout</li>
       </ul>
     </aside>
