@@ -265,7 +265,7 @@ input, select, button, textarea {
 /* ====== Sidebar ====== */
 .sidebar {
   width: 240px;
-  background-color: #d6c16f!important;
+  background-color: #f1cfa8!important;
   color: white;
   height: 100vh;
   position: fixed;
