@@ -28,6 +28,7 @@
   cursor: pointer;
   color: #000;
   background-color: transparent!important;
+  display: !important;
 }
 #d-link::before {
   content: url("https://fontflow-backend-vhnr.vercel.app/noun-home-5230118.png");
@@ -511,6 +512,7 @@ button#del {background-color: #e30614;}
 .dashboard-content button {
   transition: background-color 0.2s ease;
   margin: 5px;
+  background-color: lightsalmon;
 }
 
 .dashboard-content .bg-blue-500:hover {
