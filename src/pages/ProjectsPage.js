@@ -12,10 +12,15 @@ const ProjectsPage = () => {
   const [editingId, setEditingId] = useState(null);
   const [editedProject, setEditedProject] = useState({});
   const [selectedFontIds, setSelectedFontIds] = useState({});
-  
-  // ⬇️ Changed from single code to object keyed by projectId
+  const [toastMessage, setToastMessage] = useState('');
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(''), 2500);
+  };
+
+  // ⬇️ Code storage per project
   const [generatedCodes, setGeneratedCodes] = useState({});
-  
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -105,16 +110,11 @@ const ProjectsPage = () => {
     }
   };
 
-  // ⬇️ Updated to store generated code for each specific project
   const generateCodeForProject = async (projectId) => {
-    console.log("Generating code for project ID:", projectId);
     try {
       const res = await axios.get(`${API_BASE}/projects/${projectId}/generate-code`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
-
-      console.log("Generated Code Response:", res.data);
-
       setGeneratedCodes((prev) => ({
         ...prev,
         [projectId]: {
@@ -261,8 +261,6 @@ const ProjectsPage = () => {
                   >
                     Delete
                   </button>
-
-                  {/* Create Code Button */}
                   <button
                     onClick={() => generateCodeForProject(project._id)}
                     className="ml-4 px-4 py-2 bg-green-500 text-white rounded"
@@ -271,14 +269,25 @@ const ProjectsPage = () => {
                   </button>
                 </div>
 
-                {/* ⬇️ Show generated code directly under this project */}
+                {/* Generated Code */}
                 {generatedCodes[project._id] && (
                   <div className="mt-4">
                     <h3 className="font-bold mb-2">Generated Embed & CSS Code</h3>
-                    
+
                     {generatedCodes[project._id].embedCode && (
                       <div className="mb-4">
-                        <h4 className="font-semibold">Embed Code</h4>
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-semibold">Embed Code</h4>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(generatedCodes[project._id].embedCode);
+                              showToast('✅ Embed code copied!');
+                            }}
+                            className="px-3 py-1 text-white bg-orange-500 rounded hover:bg-orange-600 text-sm"
+                          >
+                            Copy
+                          </button>
+                        </div>
                         <pre className="bg-gray-100 p-3 rounded overflow-auto text-sm whitespace-pre-wrap">
                           {generatedCodes[project._id].embedCode}
                         </pre>
@@ -287,7 +296,18 @@ const ProjectsPage = () => {
 
                     {generatedCodes[project._id].cssCode && (
                       <div>
-                        <h4 className="font-semibold">CSS Code</h4>
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-semibold">CSS Code</h4>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(generatedCodes[project._id].cssCode);
+                              showToast('✅ CSS code copied!');
+                            }}
+                            className="px-3 py-1 text-white bg-orange-500 rounded hover:bg-orange-600 text-sm"
+                          >
+                            Copy
+                          </button>
+                        </div>
                         <pre className="bg-gray-100 p-3 rounded overflow-auto text-sm whitespace-pre-wrap">
                           {generatedCodes[project._id].cssCode}
                         </pre>
@@ -299,6 +319,13 @@ const ProjectsPage = () => {
             )}
           </div>
         ))}
+
+        {/* Toast */}
+        {toastMessage && (
+          <div className="fixed bottom-4 right-4 bg-orange-500 text-white px-4 py-2 rounded-lg shadow-lg text-sm">
+            {toastMessage}
+          </div>
+        )}
       </div>
     </div>
   );
