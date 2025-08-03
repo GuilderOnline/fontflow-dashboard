@@ -30,19 +30,19 @@
 }
 #d-link::before {
   content: url("https://fontflow-backend-vhnr.vercel.app/noun-home-5230118.png");
-  margin-left: 5px;
+  margin-right: 5px;
 }
 #u-link::before {
   content: url("https://fontflow-backend-vhnr.vercel.app/noun-upload-6198230.png");
-  margin-left: 5px;
+  margin-right: 5px;
 }
 #p-link::before {
   content: url("https://fontflow-backend-vhnr.vercel.app/noun-website-5361389.png");
-  margin-left: 5px;
+  margin-right: 5px;
 }
 #l-link::before {
   content: url("https://fontflow-backend-vhnr.vercel.app/noun-logout-7867887.png");
-  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .sidebar-menu li:hover {
