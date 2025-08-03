@@ -28,7 +28,7 @@
   cursor: pointer;
   color: #000;
   background-color: transparent!important;
-  display: !important;
+  display: block!important;
 }
 #d-link::before {
   content: url("https://fontflow-backend-vhnr.vercel.app/noun-home-5230118.png");
