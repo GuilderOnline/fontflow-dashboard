@@ -12,16 +12,15 @@ const ProjectsPage = () => {
   const [editingId, setEditingId] = useState(null);
   const [editedProject, setEditedProject] = useState({});
   const [selectedFontIds, setSelectedFontIds] = useState({});
+  const [generatedCodes, setGeneratedCodes] = useState({});
   const [toastMessage, setToastMessage] = useState('');
+
+  const token = localStorage.getItem('token');
 
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 2500);
   };
-
-  // ⬇️ Code storage per project
-  const [generatedCodes, setGeneratedCodes] = useState({});
-  const token = localStorage.getItem('token');
 
   useEffect(() => {
     fetchProjects();
@@ -35,7 +34,7 @@ const ProjectsPage = () => {
       });
       setProjects(res.data);
     } catch (err) {
-      console.error('❌ Error fetching projects:', err.response ? err.response.data : err.message);
+      console.error('❌ Error fetching projects:', err.response?.data || err.message);
     } finally {
       setLoading(false);
     }
@@ -48,7 +47,7 @@ const ProjectsPage = () => {
       });
       setFonts(res.data);
     } catch (err) {
-      console.error('❌ Error fetching fonts:', err.response ? err.response.data : err.message);
+      console.error('❌ Error fetching fonts:', err.response?.data || err.message);
     }
   };
 
@@ -60,8 +59,9 @@ const ProjectsPage = () => {
       });
       setProjects([...projects, res.data]);
       setNewProject({ name: '', url: '', description: '' });
+      showToast('✅ Project created');
     } catch (err) {
-      console.error('❌ Error creating project:', err.response ? err.response.data : err.message);
+      console.error('❌ Error creating project:', err.response?.data || err.message);
     }
   };
 
@@ -72,8 +72,9 @@ const ProjectsPage = () => {
       });
       setProjects(projects.map((p) => (p._id === id ? res.data : p)));
       setEditingId(null);
+      showToast('✅ Project updated');
     } catch (err) {
-      console.error('❌ Error updating project:', err.response ? err.response.data : err.message);
+      console.error('❌ Error updating project:', err.response?.data || err.message);
     }
   };
 
@@ -83,8 +84,9 @@ const ProjectsPage = () => {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
       setProjects(projects.filter((p) => p._id !== id));
+      showToast('🗑️ Project deleted');
     } catch (err) {
-      console.error('❌ Error deleting project:', err.response ? err.response.data : err.message);
+      console.error('❌ Error deleting project:', err.response?.data || err.message);
     }
   };
 
@@ -94,8 +96,9 @@ const ProjectsPage = () => {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
       fetchProjects();
+      showToast('🎯 Font assigned');
     } catch (err) {
-      console.error('❌ Error assigning font:', err.response ? err.response.data : err.message);
+      console.error('❌ Error assigning font:', err.response?.data || err.message);
     }
   };
 
@@ -105,8 +108,9 @@ const ProjectsPage = () => {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
       fetchProjects();
+      showToast('❌ Font removed');
     } catch (err) {
-      console.error('❌ Error removing font:', err.response ? err.response.data : err.message);
+      console.error('❌ Error removing font:', err.response?.data || err.message);
     }
   };
 
@@ -115,6 +119,7 @@ const ProjectsPage = () => {
       const res = await axios.get(`${API_BASE}/projects/${projectId}/generate-code`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
+
       setGeneratedCodes((prev) => ({
         ...prev,
         [projectId]: {
@@ -122,8 +127,9 @@ const ProjectsPage = () => {
           cssCode: res.data.cssCode
         }
       }));
+      showToast('📄 Code generated');
     } catch (err) {
-      console.error('❌ Error generating code:', err.response ? err.response.data : err.message);
+      console.error('❌ Error generating code:', err.response?.data || err.message);
     }
   };
 
@@ -132,7 +138,15 @@ const ProjectsPage = () => {
   return (
     <div className="dashboard-container flex">
       <Sidebar />
-      <div className="dashboard-content p-6 flex-1">
+      <div className="dashboard-content p-6 flex-1 relative">
+        
+        {/* ✅ Toast Message */}
+        {toastMessage && (
+          <div className="fixed top-5 right-5 bg-gray-900 text-white px-4 py-2 rounded shadow-lg z-50 animate-fade-in">
+            {toastMessage}
+          </div>
+        )}
+
         <h1 className="text-2xl font-bold mb-6">Projects</h1>
 
         {/* Create Project Form */}
@@ -261,6 +275,8 @@ const ProjectsPage = () => {
                   >
                     Delete
                   </button>
+
+                  {/* Create Code Button */}
                   <button
                     onClick={() => generateCodeForProject(project._id)}
                     className="ml-4 px-4 py-2 bg-green-500 text-white rounded"
@@ -269,25 +285,14 @@ const ProjectsPage = () => {
                   </button>
                 </div>
 
-                {/* Generated Code */}
+                {/* Generated code */}
                 {generatedCodes[project._id] && (
                   <div className="mt-4">
                     <h3 className="font-bold mb-2">Generated Embed & CSS Code</h3>
-
+                    
                     {generatedCodes[project._id].embedCode && (
                       <div className="mb-4">
-                        <div className="flex justify-between items-center">
-                          <h4 className="font-semibold">Embed Code</h4>
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(generatedCodes[project._id].embedCode);
-                              showToast('✅ Embed code copied!');
-                            }}
-                            className="px-3 py-1 text-white bg-orange-500 rounded hover:bg-orange-600 text-sm"
-                          >
-                            Copy
-                          </button>
-                        </div>
+                        <h4 className="font-semibold">Embed Code</h4>
                         <pre className="bg-gray-100 p-3 rounded overflow-auto text-sm whitespace-pre-wrap">
                           {generatedCodes[project._id].embedCode}
                         </pre>
@@ -296,18 +301,7 @@ const ProjectsPage = () => {
 
                     {generatedCodes[project._id].cssCode && (
                       <div>
-                        <div className="flex justify-between items-center">
-                          <h4 className="font-semibold">CSS Code</h4>
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(generatedCodes[project._id].cssCode);
-                              showToast('✅ CSS code copied!');
-                            }}
-                            className="px-3 py-1 text-white bg-orange-500 rounded hover:bg-orange-600 text-sm"
-                          >
-                            Copy
-                          </button>
-                        </div>
+                        <h4 className="font-semibold">CSS Code</h4>
                         <pre className="bg-gray-100 p-3 rounded overflow-auto text-sm whitespace-pre-wrap">
                           {generatedCodes[project._id].cssCode}
                         </pre>
@@ -319,13 +313,6 @@ const ProjectsPage = () => {
             )}
           </div>
         ))}
-
-        {/* Toast */}
-        {toastMessage && (
-          <div className="fixed bottom-4 right-4 bg-orange-500 text-white px-4 py-2 rounded-lg shadow-lg text-sm">
-            {toastMessage}
-          </div>
-        )}
       </div>
     </div>
   );
