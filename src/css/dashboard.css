@@ -44,6 +44,10 @@
   content: url("https://fontflow-backend-vhnr.vercel.app/noun-logout-7867887.png");
   margin-right: 5px;
 }
+.sidebar-menu li.active {
+  font-weight: bold;
+  color: #000; /* Optional: darker highlight */
+}
 
 .sidebar-menu li:hover {
   text-decoration: underline;
