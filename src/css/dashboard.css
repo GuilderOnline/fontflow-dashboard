@@ -581,6 +581,7 @@ button#del {background-color: #e30614;}
   transition: box-shadow 0.2s ease, transform 0.1s ease;
   border-radius: 10px;
   padding: 20px;
+  margin-top: 20px;
 }
 
 .bg-white.shadow-md.rounded-lg:hover {
