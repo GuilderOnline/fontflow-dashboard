@@ -9,7 +9,7 @@ const Sidebar = () => {
   const handleLogout = () => {
     logout();
     navigate('/login');
-  };
+  }; 
 
   return (
     <aside className="sidebar">
