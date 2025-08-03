@@ -12,10 +12,10 @@ const ProjectsPage = () => {
   const [editingId, setEditingId] = useState(null);
   const [editedProject, setEditedProject] = useState({});
   const [selectedFontIds, setSelectedFontIds] = useState({});
-  const [generatedCode, setGeneratedCode] = useState({ embedCode: '', cssCode: '' });
   
-
-  // ✅ Get token if available
+  // ⬇️ Changed from single code to object keyed by projectId
+  const [generatedCodes, setGeneratedCodes] = useState({});
+  
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -105,22 +105,27 @@ const ProjectsPage = () => {
     }
   };
 
+  // ⬇️ Updated to store generated code for each specific project
   const generateCodeForProject = async (projectId) => {
-  console.log("Generating code for project ID:", projectId);  // Log to confirm it's triggered
-  try {
-    const res = await axios.get(`${API_BASE}/projects/${projectId}/generate-code`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {}
-    });
-    
-    console.log("Generated Code Response:", res.data);  // Log the response to check URLs
+    console.log("Generating code for project ID:", projectId);
+    try {
+      const res = await axios.get(`${API_BASE}/projects/${projectId}/generate-code`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
 
-    // Set the generated embed and CSS code in state
-    setGeneratedCode({ embedCode: res.data.embedCode, cssCode: res.data.cssCode });
-  } catch (err) {
-    console.error('❌ Error generating code:', err.response ? err.response.data : err.message);
-  }
-};
+      console.log("Generated Code Response:", res.data);
 
+      setGeneratedCodes((prev) => ({
+        ...prev,
+        [projectId]: {
+          embedCode: res.data.embedCode,
+          cssCode: res.data.cssCode
+        }
+      }));
+    } catch (err) {
+      console.error('❌ Error generating code:', err.response ? err.response.data : err.message);
+    }
+  };
 
   if (loading) return <div>Loading projects...</div>;
 
@@ -265,36 +270,35 @@ const ProjectsPage = () => {
                     Create Code
                   </button>
                 </div>
+
+                {/* ⬇️ Show generated code directly under this project */}
+                {generatedCodes[project._id] && (
+                  <div className="mt-4">
+                    <h3 className="font-bold mb-2">Generated Embed & CSS Code</h3>
+                    
+                    {generatedCodes[project._id].embedCode && (
+                      <div className="mb-4">
+                        <h4 className="font-semibold">Embed Code</h4>
+                        <pre className="bg-gray-100 p-3 rounded overflow-auto text-sm whitespace-pre-wrap">
+                          {generatedCodes[project._id].embedCode}
+                        </pre>
+                      </div>
+                    )}
+
+                    {generatedCodes[project._id].cssCode && (
+                      <div>
+                        <h4 className="font-semibold">CSS Code</h4>
+                        <pre className="bg-gray-100 p-3 rounded overflow-auto text-sm whitespace-pre-wrap">
+                          {generatedCodes[project._id].cssCode}
+                        </pre>
+                      </div>
+                    )}
+                  </div>
+                )}
               </>
             )}
           </div>
         ))}
-
-        {/* Display Embed and CSS Code */}
-        {(generatedCode.embedCode || generatedCode.cssCode) && (
-  <div className="mt-6">
-    <h3 className="font-bold mb-2">Generated Embed & CSS Code</h3>
-    
-    {generatedCode.embedCode && (
-      <div className="mb-4">
-        <h4 className="font-semibold">Embed Code</h4>
-        <pre className="bg-gray-100 p-3 rounded overflow-auto text-sm whitespace-pre-wrap">
-          {generatedCode.embedCode}
-        </pre>
-      </div>
-    )}
-
-    {generatedCode.cssCode && (
-      <div>
-        <h4 className="font-semibold">CSS Code</h4>
-        <pre className="bg-gray-100 p-3 rounded overflow-auto text-sm whitespace-pre-wrap">
-          {generatedCode.cssCode}
-        </pre>
-      </div>
-    )}
-  </div>
-)}
-
       </div>
     </div>
   );
