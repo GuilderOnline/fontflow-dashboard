@@ -65,8 +65,9 @@ const LoginPage = () => {
         </p>
         <p>
           Set up a basic account with us and start embedding fonts in yiur websites & apps.
-          <button className="btn-primary" type="submit">New Account</button>
+          
         </p>
+        <button className="btn-primary" type="submit">New Account</button>
         </section>
 
         <section className="login-box">
