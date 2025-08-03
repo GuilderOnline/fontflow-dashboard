@@ -12,13 +12,6 @@ const ProjectsPage = () => {
   const [editingId, setEditingId] = useState(null);
   const [editedProject, setEditedProject] = useState({});
   const [selectedFontIds, setSelectedFontIds] = useState({});
-  const [toastMessage, setToastMessage] = useState('');
-  
-  const showToast = (msg) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(''), 2500); // hide after 2.5s
-  };
-
   const [generatedCodes, setGeneratedCodes] = useState({});
   const token = localStorage.getItem('token');
 
@@ -110,10 +103,14 @@ const ProjectsPage = () => {
   };
 
   const generateCodeForProject = async (projectId) => {
+    console.log("Generating code for project ID:", projectId);
     try {
       const res = await axios.get(`${API_BASE}/projects/${projectId}/generate-code`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
+
+      console.log("Generated Code Response:", res.data);
+
       setGeneratedCodes((prev) => ({
         ...prev,
         [projectId]: {
@@ -133,13 +130,6 @@ const ProjectsPage = () => {
       <Sidebar />
       <div className="dashboard-content p-6 flex-1">
         <h1 className="text-2xl font-bold mb-6">Projects</h1>
-
-        {/* Toast */}
-        {toastMessage && (
-          <div className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow z-50">
-            {toastMessage}
-          </div>
-        )}
 
         {/* Create Project Form */}
         <form onSubmit={createProject} className="bg-white shadow-md rounded-lg p-6 mb-10">
@@ -277,11 +267,11 @@ const ProjectsPage = () => {
                   </button>
                 </div>
 
-                {/* Generated Code with Copy Buttons */}
+                {/* Show generated code */}
                 {generatedCodes[project._id] && (
                   <div className="mt-4">
                     <h3 className="font-bold mb-2">Generated Embed & CSS Code</h3>
-
+                    
                     {generatedCodes[project._id].embedCode && (
                       <div className="mb-4">
                         <h4 className="font-semibold">Embed Code</h4>
@@ -289,9 +279,12 @@ const ProjectsPage = () => {
                           {generatedCodes[project._id].embedCode}
                         </pre>
                         <button
-                          onClick={() => {
+                          onClick={(e) => {
                             navigator.clipboard.writeText(generatedCodes[project._id].embedCode);
-                            showToast('📋 Embed code copied');
+                            const btn = e.target;
+                            const originalText = btn.textContent;
+                            btn.textContent = 'Copied!';
+                            setTimeout(() => { btn.textContent = originalText; }, 2000);
                           }}
                           className="mt-2 px-3 py-1 bg-gray-800 text-white rounded text-sm"
                         >
@@ -307,9 +300,12 @@ const ProjectsPage = () => {
                           {generatedCodes[project._id].cssCode}
                         </pre>
                         <button
-                          onClick={() => {
+                          onClick={(e) => {
                             navigator.clipboard.writeText(generatedCodes[project._id].cssCode);
-                            showToast('📋 CSS code copied');
+                            const btn = e.target;
+                            const originalText = btn.textContent;
+                            btn.textContent = 'Copied!';
+                            setTimeout(() => { btn.textContent = originalText; }, 2000);
                           }}
                           className="mt-2 px-3 py-1 bg-gray-800 text-white rounded text-sm"
                         >
