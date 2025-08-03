@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import Sidebar from '../components/Sidebar';
 import { useAuth } from '../context/AuthContext';
@@ -33,37 +33,47 @@ const UploadPage = () => {
     setMessage('');
   };
 
-  // ✅ Upload handler
-  const handleUpload = async (e) => {
-    e.preventDefault();
 
-    if (!file) {
-      setMessage('Please select a valid font file to upload.');
-      return;
+const fileInputRef = useRef(null);
+
+// ✅ Upload handler
+const handleUpload = async (e) => {
+  e.preventDefault();
+
+  if (!file) {
+    setMessage('Please select a valid font file to upload.');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('font', file);
+
+  try {
+    setUploading(true);
+    console.log('🔑 Token being sent:', token);
+
+    const res = await axios.post(`${API_BASE_URL}/fonts/upload`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("Upload response:", res.data);
+    setMessage(`✅ Upload successful: ${res.data.name}`);
+    setFile(null);
+
+    // ✅ Reset file input so same file can be reselected
+    if (fileInputRef.current) {
+      fileInputRef.current.value = null;
     }
+  } catch (err) {
+    setMessage(`❌ Upload failed: ${err.response?.data?.message || err.message}`);
+  } finally {
+    setUploading(false);
+  }
+};
 
-    const formData = new FormData();
-    formData.append('font', file);
-
-    try {
-      setUploading(true);
-      console.log('🔑 Token being sent:', token);
-
-      const res = await axios.post(`${API_BASE_URL}/fonts/upload`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("Upload response:", res.data);
-      setMessage(`✅ Upload successful: ${res.data.name}`);
-      setFile(null);
-    } catch (err) {
-      setMessage(`❌ Upload failed: ${err.response?.data?.message || err.message}`);
-    } finally {
-      setUploading(false);
-    }
-  };
 
   return (
     <div className="main-layout">
