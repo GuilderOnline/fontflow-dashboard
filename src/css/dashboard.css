@@ -179,7 +179,9 @@
   margin-top: 16px;
   font-weight: 500;
   margin-right: 600px;
+  
 }
+.upload-header { margin-right: 600px;}
 /* ProjectsPage.css */
 
 .dashboard-container {

@@ -69,7 +69,7 @@ const UploadPage = () => {
     <div className="main-layout">
       <Sidebar />
       <div className="main-content">
-        <h2>Upload a Font & Convert to WOFF2</h2>
+        <h2 class ="upload-header">Upload a Font & Convert to WOFF2</h2>
         <form onSubmit={handleUpload} className="upload-form">
           <input
             type="file"
@@ -77,7 +77,7 @@ const UploadPage = () => {
             onChange={handleFileChange}
           />
           <button type="submit" disabled={uploading}>
-            {uploading ? 'Uploading...' : 'Upload Font'}
+            {uploading ? 'Uploading...converting...' : 'Upload Font & Convert'}
           </button>
         </form>
         {message && <p className="upload-message">{message}</p>}
