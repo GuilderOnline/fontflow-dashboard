@@ -549,3 +549,53 @@ button#del {background-color: #e30614;}
 .dashboard-content .list-disc.list-inside > li {
   padding-left: 0.25rem;
 }
+/* ---------------- */
+/* ORANGE BUTTONS   */
+/* ---------------- */
+.bg-blue-500,
+.bg-green-500,
+.bg-red-500 {
+  background-color: #ff6600 !important; /* Bright orange */
+}
+
+.bg-blue-500:hover,
+.bg-green-500:hover,
+.bg-red-500:hover {
+  background-color: #e65c00 !important; /* Darker orange */
+}
+
+.text-white {
+  color: white !important;
+}
+
+/* ---------------- */
+/* PROJECT CARDS    */
+/* ---------------- */
+.bg-white.shadow-md.rounded-lg {
+  border: 1px solid #e5e7eb; /* Light border */
+  background-color: #ffffff;
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.bg-white.shadow-md.rounded-lg:hover {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+}
+
+/* ---------------- */
+/* FONT LIST STYLING */
+/* ---------------- */
+ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+ul li {
+  background: #f9fafb;
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
