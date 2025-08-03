@@ -56,7 +56,7 @@ const UploadPage = () => {
         },
       });
       console.log("Upload response:", res.data);
-      setMessage(`✅ Upload successful: ${res.data.filename}`);
+      setMessage(`✅ Upload successful: ${res.data.name}`);
       setFile(null);
     } catch (err) {
       setMessage(`❌ Upload failed: ${err.response?.data?.message || err.message}`);
