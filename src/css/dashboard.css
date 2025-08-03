@@ -26,10 +26,10 @@
 .sidebar-menu li {
   margin: 20px 0;
   cursor: pointer;
-  color: #000;
+  color: #e30614;
 }
-.sidebar-menu li::before {
-  content:"\003E";
+#d-link::before {
+  content:url("/noun-home-5230118.png ");
 }
 
 .sidebar-menu li:hover {
