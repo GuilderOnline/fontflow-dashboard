@@ -63,6 +63,10 @@ const LoginPage = () => {
           Font Flow provides a reliable, privacy-friendly platform for uploading, optimizing,
           and serving web fonts, tailored for developers and designers.
         </p>
+        <p>
+          Set up a basic account with us and start embedding fonts in yiur websites & apps.
+          <button className="btn-primary" type="submit">New Account</button>
+        </p>
         </section>
 
         <section className="login-box">
