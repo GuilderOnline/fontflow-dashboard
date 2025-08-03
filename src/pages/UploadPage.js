@@ -55,7 +55,7 @@ const UploadPage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-
+      console.log("Upload response:", res.data);
       setMessage(`✅ Upload successful: ${res.data.filename}`);
       setFile(null);
     } catch (err) {
