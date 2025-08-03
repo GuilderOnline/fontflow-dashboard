@@ -164,8 +164,6 @@ const DashboardPage = () => {
         {/* Summary cards */}
         <div className="summary-cards">
           <div className="card">Total Fonts: {fonts.length}</div>
-          <div className="card">Plan: Pro</div>
-          <div className="card">Status: Active</div>
           <div className="card">Role: {user?.role}</div>
         </div>
 
