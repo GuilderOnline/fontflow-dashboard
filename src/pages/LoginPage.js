@@ -50,7 +50,7 @@ const LoginPage = () => {
   return (
     <div className="login-container">
       <header className="login-header">
-        <div className="logo"><img src="../../public/fontflow-logo.png" alt="FontFlow Logo"/></div>
+        <div className="logo"><img src="/fontflow-logo.png" alt="FontFlow Logo"/></div>
         
       </header>
 
