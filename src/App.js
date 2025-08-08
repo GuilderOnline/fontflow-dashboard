@@ -19,8 +19,7 @@ function App() {
           <Route path="/upload" element={<UploadPage />} />
           <Route path="/projects/:projectId" element={<ProjectsPage />} />
           <Route path="/projects" element={<ProjectsPage />} />
-          <Route path="/apikeys" element={<APIKeysPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
+         
           {/* Redirect any unknown route to dashboard */}
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
