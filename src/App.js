@@ -1,4 +1,3 @@
-// src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import DashboardPage from './pages/DashboardPage';
@@ -9,12 +8,13 @@ import ProjectsPage from './pages/ProjectsPage';
 import APIKeysPage from './pages/APIKeysPage';
 import SettingsPage from './pages/SettingsPage';
 
-
+// Main App component with routing logic
 function App() {
-  const { token } = useAuth();
+  const { token } = useAuth(); // Get JWT token from context
 
   return (
     <Router>
+      {/* If authenticated, show protected routes */}
       {token ? (
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />
@@ -23,13 +23,15 @@ function App() {
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/apikeys" element={<APIKeysPage />} />
           <Route path="/settings" element={<SettingsPage />} />
-
+          {/* Redirect any unknown route to dashboard */}
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
       ) : (
+        // If not authenticated, show login routes only
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/login" element={<LoginPage />} />
+          {/* Redirect any unknown route to login */}
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       )}

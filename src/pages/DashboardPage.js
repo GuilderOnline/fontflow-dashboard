@@ -4,11 +4,15 @@ import "../css/dashboard.css";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
+// Set API base URL from env or fallback to localhost
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE || "http://localhost:4000/api";
 
+// Dashboard page component
 const DashboardPage = () => {
-  const { user, token } = useAuth();
+  const { user, token } = useAuth(); // Get user and token from context
+
+  // State for fonts, sorting, preview modal, and preview styling
   const [fonts, setFonts] = useState([]);
   const [sortConfig, setSortConfig] = useState({
     key: "createdAt",
@@ -25,35 +29,37 @@ const DashboardPage = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
 
   /**
-   * 📡 Fetch fonts — runs only when user & token exist
+   * Fetch fonts — runs only when user & token exist
    */
   useEffect(() => {
     if (!user || !token) {
-      console.warn("⏳ Waiting for user + token before fetching fonts...");
+      console.warn("Waiting for user + token before fetching fonts...");
       return;
     }
 
+    // Fetch fonts from API
     const fetchFonts = async () => {
       try {
-        console.log("🔍 Fetching fonts with token:", token);
+        console.log("Fetching fonts with token:", token);
 
         const res = await axios.get(`${API_BASE_URL}/fonts`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        console.log("📦 Fonts from API:", res.data);
+        console.log("Fonts from API:", res.data);
 
+        // Log each font's details
         res.data.forEach((font, index) => {
           console.log(`--- FONT #${index + 1} ---`);
-          console.log("🆔 ID:", font._id);
-          console.log("📛 Name:", font.name);
-          console.log("📜 Original URL:", font.originalDownloadUrl);
-          console.log("📜 WOFF2 URL:", font.woff2DownloadUrl);
+          console.log("ID:", font._id);
+          console.log("Name:", font.name);
+          console.log("Original URL:", font.originalDownloadUrl);
+          console.log("WOFF2 URL:", font.woff2DownloadUrl);
         });
 
         setFonts(res.data);
       } catch (err) {
-        console.error("❌ Error fetching fonts:", err);
+        console.error("Error fetching fonts:", err);
       }
     };
 
@@ -61,14 +67,15 @@ const DashboardPage = () => {
   }, [user, token]);
 
   /**
-   * 🎯 Load font dynamically for preview modal
+   *  Load font dynamically for preview modal
    */
   useEffect(() => {
     if (!previewFont?.url) return;
 
-    console.log(`🎯 Loading font from: ${previewFont.url}`);
+    console.log(`Loading font from: ${previewFont.url}`);
     setFontLoaded(false);
 
+    // Load font using FontFace API
     const fontFace = new FontFace(
       previewFont.fullName,
       `url(${previewFont.url})`
@@ -78,14 +85,14 @@ const DashboardPage = () => {
       .then((loaded) => {
         document.fonts.add(loaded);
         setFontLoaded(true);
-        console.log(`✅ Font ${previewFont.fullName} loaded`);
+        console.log(`Font ${previewFont.fullName} loaded`);
       })
       .catch((err) => {
-        console.error(`❌ Failed to load font ${previewFont.fullName}:`, err);
+        console.error(`Failed to load font ${previewFont.fullName}:`, err);
       });
   }, [previewFont]);
 
-  // Sorting
+  // Handle sorting of fonts table
   const handleSort = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
@@ -94,6 +101,7 @@ const DashboardPage = () => {
     setSortConfig({ key, direction });
   };
 
+  // Get sort indicator arrow for column
   const getSortIndicator = (key) => {
     if (sortConfig.key === key) {
       return sortConfig.direction === "asc" ? "↑" : "↓";
@@ -101,6 +109,7 @@ const DashboardPage = () => {
     return "";
   };
 
+  // Sort fonts array based on sortConfig
   const sortedFonts = [...fonts].sort((a, b) => {
     const aVal = a[sortConfig.key];
     const bVal = b[sortConfig.key];
@@ -118,7 +127,7 @@ const DashboardPage = () => {
     return 0;
   });
 
-  // Delete font
+  // Delete font by ID and update state
   const deleteFont = async (id) => {
     try {
       await axios.delete(`${API_BASE_URL}/fonts/${id}`, {
@@ -126,11 +135,11 @@ const DashboardPage = () => {
       });
       setFonts((prev) => prev.filter((font) => font._id !== id));
     } catch (err) {
-      console.error("❌ Error deleting font:", err);
+      console.error("Error deleting font:", err);
     }
   };
 
-  // Open preview modal (choose correct signed URL)
+  // Open preview modal for selected font
   const openPreview = (font) => {
     const fontName = font.family || font.fullName || font.name;
 
@@ -151,6 +160,7 @@ const DashboardPage = () => {
     setLineHeight(1.4);
   };
 
+  // Close preview modal
   const closePreview = () => {
     setPreviewFont(null);
   };
@@ -173,6 +183,7 @@ const DashboardPage = () => {
           <table>
             <thead>
               <tr>
+                {/* Table headers with sorting */}
                 <th onClick={() => handleSort("fullName")}>
                   Full Name {getSortIndicator("fullName")}
                 </th>
@@ -198,6 +209,7 @@ const DashboardPage = () => {
               </tr>
             </thead>
             <tbody>
+              {/* Render sorted fonts */}
               {sortedFonts.map((font) => (
                 <tr key={font._id}>
                   <td>{font.fullName}</td>
@@ -208,28 +220,30 @@ const DashboardPage = () => {
                   <td>{font.license}</td>
                   <td>{new Date(font.createdAt).toLocaleString()}</td>
                   <td>
+                    {/* Preview button */}
                     <button onClick={() => openPreview(font)}>Preview</button>{" "}
                     {/* WOFF2 download */}
-  {font.woff2DownloadUrl && (
-    <a
-      href={font.woff2DownloadUrl}
-      download={`${font.name || 'font'}.woff2`}
-      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 mr-2"
-    >
-      Download WOFF2
-    </a>
-  )}
-
-  {/* Original download */}
-  {font.originalDownloadUrl && (
-    <a
-      href={font.originalDownloadUrl}
-      download={`${font.name || 'font'}`}
-      className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-    >
-      Download Original
-    </a>
+                    {font.woff2DownloadUrl && (
+                      <a
+                        href={font.woff2DownloadUrl}
+                        download={`${font.name || 'font'}.woff2`}
+                        className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 mr-2"
+                      >
+                        Download WOFF2
+                      </a>
                     )}
+
+                    {/* Original download */}
+                    {font.originalDownloadUrl && (
+                      <a
+                        href={font.originalDownloadUrl}
+                        download={`${font.name || 'font'}`}
+                        className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                      >
+                        Download Original
+                      </a>
+                    )}
+                    {/* Delete button */}
                     <button id="del" onClick={() => deleteFont(font._id)}>Delete</button>
                   </td>
                 </tr>
@@ -245,6 +259,7 @@ const DashboardPage = () => {
               className="font-preview-modal"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Controls for preview customization */}
               <div className="preview-controls">
                 <label>
                   Text:
@@ -294,6 +309,7 @@ const DashboardPage = () => {
                 <button onClick={closePreview}>Close</button>
               </div>
 
+              {/* Preview area styled with selected font and options */}
               <div
                 className="preview-area"
                 style={{

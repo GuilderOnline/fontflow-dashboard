@@ -184,6 +184,7 @@
   
 }
 .upload-header { margin-left: 600px;}
+
 /* ProjectsPage.css */
 
 .dashboard-container {
@@ -272,7 +273,6 @@ button.text {
 
 }
 
-/* ====== Global Styles ====== */
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
@@ -319,7 +319,7 @@ input, select, button, textarea {
   padding-left: 0.5rem;
 }
 
-/* ====== Dashboard Layout ====== */
+/* Dashboard */
 .dashboard-container {
   display: flex;
   min-height: 100vh;
@@ -347,7 +347,7 @@ input, select, button, textarea {
   font-weight: 600;
 }
 
-/* ====== Fonts Table ====== */
+/*  Fonts Table */
 .fonts-table table {
   width: 100%;
   border-collapse: collapse;
@@ -386,7 +386,7 @@ button#del {background-color: #e30614;}
   background-color: #2563eb;
 }
 
-/* ====== Font Preview Modal ====== */
+/* Font Preview Modal  */
 .font-preview-overlay {
   position: fixed;
   top: 0;
@@ -428,7 +428,7 @@ button#del {background-color: #e30614;}
   margin-top: 1rem;
 }
 
-/* ====== Upload Page ====== */
+/* Upload Page  */
 .upload-form {
   background: white;
   padding: 2rem;
@@ -460,7 +460,7 @@ button#del {background-color: #e30614;}
   background-color: #059669;
 }
 
-/* ===== Dashboard Styling for ProjectsPage ===== */
+/* Dashboard Styling for ProjectsPage */
 
 /* Project page title */
 .dashboard-content > h1 {
@@ -553,9 +553,7 @@ button#del {background-color: #e30614;}
 .dashboard-content .list-disc.list-inside > li {
   padding-left: 0.25rem;
 }
-/* ---------------- */
 /* ORANGE BUTTONS   */
-/* ---------------- */
 .bg-blue-500,
 .bg-green-500,
 .bg-red-500 {
@@ -572,9 +570,7 @@ button#del {background-color: #e30614;}
   color: white !important;
 }
 
-/* ---------------- */
 /* PROJECT CARDS    */
-/* ---------------- */
 .bg-white.shadow-md.rounded-lg {
   border: 1px solid #e5e7eb; /* Light border */
   background-color: #ffffff;
@@ -589,9 +585,7 @@ button#del {background-color: #e30614;}
   transform: translateY(-1px);
 }
 
-/* ---------------- */
 /* FONT LIST STYLING */
-/* ---------------- */
 ul {
   list-style-type: none;
   padding-left: 0;

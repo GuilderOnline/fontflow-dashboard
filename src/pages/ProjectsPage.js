@@ -4,7 +4,9 @@ import Sidebar from '../components/Sidebar';
 import API_BASE from '../utils/api';
 import '../css/dashboard.css';
 
+// ProjectsPage component for managing projects and assigning fonts
 const ProjectsPage = () => {
+  // State for projects, fonts, loading, form fields, editing, font assignment, and generated code
   const [projects, setProjects] = useState([]);
   const [fonts, setFonts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,11 +17,13 @@ const ProjectsPage = () => {
   const [generatedCodes, setGeneratedCodes] = useState({});
   const token = localStorage.getItem('token');
 
+  // Fetch projects and fonts on mount
   useEffect(() => {
     fetchProjects();
     fetchFonts();
   }, []);
 
+  // Fetch all projects from API
   const fetchProjects = async () => {
     try {
       const res = await axios.get(`${API_BASE}/projects`, {
@@ -27,12 +31,13 @@ const ProjectsPage = () => {
       });
       setProjects(res.data);
     } catch (err) {
-      console.error('❌ Error fetching projects:', err.response ? err.response.data : err.message);
+      console.error('Error fetching projects:', err.response ? err.response.data : err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  // Fetch all fonts from API
   const fetchFonts = async () => {
     try {
       const res = await axios.get(`${API_BASE}/fonts`, {
@@ -40,10 +45,11 @@ const ProjectsPage = () => {
       });
       setFonts(res.data);
     } catch (err) {
-      console.error('❌ Error fetching fonts:', err.response ? err.response.data : err.message);
+      console.error('Error fetching fonts:', err.response ? err.response.data : err.message);
     }
   };
 
+  // Create a new project
   const createProject = async (e) => {
     e.preventDefault();
     try {
@@ -53,10 +59,11 @@ const ProjectsPage = () => {
       setProjects([...projects, res.data]);
       setNewProject({ name: '', url: '', description: '' });
     } catch (err) {
-      console.error('❌ Error creating project:', err.response ? err.response.data : err.message);
+      console.error('Error creating project:', err.response ? err.response.data : err.message);
     }
   };
 
+  // Update an existing project
   const updateProject = async (id) => {
     try {
       const res = await axios.put(`${API_BASE}/projects/${id}`, editedProject, {
@@ -65,10 +72,11 @@ const ProjectsPage = () => {
       setProjects(projects.map((p) => (p._id === id ? res.data : p)));
       setEditingId(null);
     } catch (err) {
-      console.error('❌ Error updating project:', err.response ? err.response.data : err.message);
+      console.error('Error updating project:', err.response ? err.response.data : err.message);
     }
   };
 
+  // Delete a project
   const deleteProject = async (id) => {
     try {
       await axios.delete(`${API_BASE}/projects/${id}`, {
@@ -76,10 +84,11 @@ const ProjectsPage = () => {
       });
       setProjects(projects.filter((p) => p._id !== id));
     } catch (err) {
-      console.error('❌ Error deleting project:', err.response ? err.response.data : err.message);
+      console.error('Error deleting project:', err.response ? err.response.data : err.message);
     }
   };
 
+  // Assign a font to a project
   const assignFont = async (projectId, fontId) => {
     try {
       await axios.post(`${API_BASE}/projects/${projectId}/fonts`, { fontId }, {
@@ -87,10 +96,11 @@ const ProjectsPage = () => {
       });
       fetchProjects();
     } catch (err) {
-      console.error('❌ Error assigning font:', err.response ? err.response.data : err.message);
+      console.error('Error assigning font:', err.response ? err.response.data : err.message);
     }
   };
 
+  // Remove a font from a project
   const removeFont = async (projectId, fontId) => {
     try {
       await axios.delete(`${API_BASE}/projects/${projectId}/fonts/${fontId}`, {
@@ -98,10 +108,11 @@ const ProjectsPage = () => {
       });
       fetchProjects();
     } catch (err) {
-      console.error('❌ Error removing font:', err.response ? err.response.data : err.message);
+      console.error('Error removing font:', err.response ? err.response.data : err.message);
     }
   };
 
+  // Generate embed and CSS code for a project
   const generateCodeForProject = async (projectId) => {
     console.log("Generating code for project ID:", projectId);
     try {
@@ -119,10 +130,11 @@ const ProjectsPage = () => {
         }
       }));
     } catch (err) {
-      console.error('❌ Error generating code:', err.response ? err.response.data : err.message);
+      console.error('Error generating code:', err.response ? err.response.data : err.message);
     }
   };
 
+  // Show loading indicator while fetching data
   if (loading) return <div>Loading projects...</div>;
 
   return (
@@ -168,6 +180,7 @@ const ProjectsPage = () => {
           <div key={project._id} className="bg-white shadow-md rounded-lg p-6 mb-6">
             {editingId === project._id ? (
               <>
+                {/* Edit project fields */}
                 <input
                   type="text"
                   value={editedProject.name}
@@ -191,6 +204,7 @@ const ProjectsPage = () => {
               </>
             ) : (
               <>
+                {/* Project details */}
                 <h3 className="text-lg font-semibold">{project.name}</h3>
                 <p>{project.url}</p>
                 <p>{project.description}</p>
@@ -236,7 +250,7 @@ const ProjectsPage = () => {
                   ))}
                 </ul>
 
-                {/* Edit / Delete */}
+                {/* Edit / Delete / Generate Code buttons */}
                 <div className="mt-4">
                   <button
                     onClick={() => {
@@ -267,11 +281,12 @@ const ProjectsPage = () => {
                   </button>
                 </div>
 
-                {/* Show generated code */}
+                {/* Show generated code for project */}
                 {generatedCodes[project._id] && (
                   <div className="mt-4">
                     <h3 className="font-bold mb-2">Generated Embed & CSS Code</h3>
                     
+                    {/* Embed code block and copy button */}
                     {generatedCodes[project._id].embedCode && (
                       <div className="mb-4">
                         <h4 className="font-semibold">Embed Code</h4>
@@ -293,6 +308,7 @@ const ProjectsPage = () => {
                       </div>
                     )}
 
+                    {/* CSS code block and copy button */}
                     {generatedCodes[project._id].cssCode && (
                       <div>
                         <h4 className="font-semibold">CSS Code</h4>

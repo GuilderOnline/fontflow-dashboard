@@ -4,35 +4,39 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-// ✅ Dynamically choose backend URL based on environment
+// Dynamically choose backend URL based on environment
 const API_BASE = process.env.REACT_APP_API_BASE;
 
 const LoginPage = () => {
-  const { login } = useAuth();
-  const navigate = useNavigate();
+  const { login } = useAuth();           // Get login function from context
+  const navigate = useNavigate();        // React Router navigation hook
 
+  // State for form fields and UI feedback
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Handle login form submission
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
+      // Send login request to backend API
       const response = await axios.post(`${API_BASE}/auth/login`, {
         email,
         password,
       });
 
       const { token, user } = response.data;
-      console.log('✅ Login success:', { token, user });
+      console.log('Login success:', { token, user });
 
+      // Store token and user in context
       login(token, user);
 
-      // Small delay before redirect
+      // Small delay before redirecting based on user role
       setTimeout(() => {
         if (user.role === 'admin') {
           navigate('/dashboard');
@@ -41,6 +45,7 @@ const LoginPage = () => {
         }
       }, 100);
     } catch (err) {
+      // Show error message if login fails
       setError(err.response?.data?.message || 'Login failed.');
     } finally {
       setLoading(false);
@@ -49,27 +54,28 @@ const LoginPage = () => {
 
   return (
     <div className="login-container">
+      {/* Header with logo */}
       <header className="login-header">
         <div className="logo"><img src="/fontflow-logo.png" alt="FontFlow Logo"/></div>
-        
       </header>
 
       <main className="login-main">
+        {/* Welcome and info section */}
         <section className="welcome">
           <h1>Welcome to <strong>Font Flow</strong></h1>
           <p>Self-host and manage your fonts with ease.</p>
           <h2>About Font Flow</h2>
-        <p>
-          Font Flow provides a reliable, privacy-friendly platform for uploading, optimizing,
-          and serving web fonts, tailored for developers and designers.
-        </p>
-        <p>
-          Set up a basic account with us and start embedding fonts in your websites & apps.
-          
-        </p>
-        <button className="btn-primary" type="submit">New Account</button>
+          <p>
+            Font Flow provides a reliable, privacy-friendly platform for uploading, optimizing,
+            and serving web fonts, tailored for developers and designers.
+          </p>
+          <p>
+            Set up a basic account with us and start embedding fonts in your websites & apps.
+          </p>
+          <button className="btn-primary" type="submit">New Account</button>
         </section>
 
+        {/* Login form section */}
         <section className="login-box">
           <h2>Login</h2>
           <form onSubmit={handleLogin}>
@@ -93,20 +99,21 @@ const LoginPage = () => {
               autoComplete="current-password"
             />
 
+            {/* Forgot password link */}
             <div className="forgot">
               <a href="#">Forgot password?</a>
             </div>
 
+            {/* Show error message if login fails */}
             {error && <p className="error-message">{error}</p>}
 
+            {/* Login button, shows loading state */}
             <button className="btn-primary" type="submit" disabled={loading}>
               {loading ? 'Logging in...' : 'Login'}
             </button>
           </form>
         </section>
       </main>
-
-      
     </div>
   );
 };

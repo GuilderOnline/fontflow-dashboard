@@ -4,26 +4,27 @@ import Sidebar from '../components/Sidebar';
 import { useAuth } from '../context/AuthContext';
 import '../css/style.css';
 
-// ✅ Use API base from .env or fallback to localhost for dev
+// Use API base from .env or fallback to localhost for dev
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE || 'http://localhost:4000/api';
 
 const UploadPage = () => {
-  const { token } = useAuth();
-  const [file, setFile] = useState(null);
-  const [message, setMessage] = useState('');
-  const [uploading, setUploading] = useState(false);
+  const { token } = useAuth(); // Get JWT token from context
+  const [file, setFile] = useState(null); // Selected file state
+  const [message, setMessage] = useState(''); // UI message state
+  const [uploading, setUploading] = useState(false); // Uploading state
  
-  // ✅ Single file change handler with validation
+  // Single file change handler with validation
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
 
-    // ✅ Allowed font extensions
+    // Allowed font extensions
     const allowedExtensions = /\.(ttf|otf|eot|woff|woff2)$/i;
 
+    // Validate file extension
     if (!allowedExtensions.test(selectedFile.name)) {
-      setMessage('❌ Wrong format. Only .ttf, .otf, .eot, .woff, or .woff2 are allowed.');
+      setMessage('Wrong format. Only .ttf, .otf, .eot, .woff, or .woff2 are allowed.');
       setFile(null);
       e.target.value = ''; // reset file input
       return;
@@ -33,15 +34,17 @@ const UploadPage = () => {
     setMessage('');
   };
 
-  // ✅ Upload handler
+  // Upload handler
   const handleUpload = async (e) => {
     e.preventDefault();
 
+    // Check if file is selected
     if (!file) {
       setMessage('Please select a valid font file to upload.');
       return;
     }
 
+    // Prepare form data for upload
     const formData = new FormData();
     formData.append('font', file);
 
@@ -49,6 +52,7 @@ const UploadPage = () => {
       setUploading(true);
       console.log('🔑 Token being sent:', token);
 
+      // Send POST request to upload font
       const res = await axios.post(`${API_BASE_URL}/fonts/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -56,10 +60,11 @@ const UploadPage = () => {
         },
       });
       console.log("Upload response:", res.data);
-      setMessage(`✅ Upload successful: ${res.data.name}`);
+      setMessage(`Upload successful: ${res.data.name}`);
       setFile(null);
     } catch (err) {
-      setMessage(`❌ Upload failed: ${err.response?.data?.message || err.message}`);
+      // Show error message if upload fails
+      setMessage(`Upload failed: ${err.response?.data?.message || err.message}`);
     } finally {
       setUploading(false);
     }
@@ -69,7 +74,9 @@ const UploadPage = () => {
     <div className="main-layout">
       <Sidebar />
       <div className="main-content">
+        {/* Page header */}
         <h2 class ="upload-header">Upload a Font & Convert to WOFF2</h2>
+        {/* Upload form */}
         <form onSubmit={handleUpload} className="upload-form">
           <input
             type="file"
@@ -80,6 +87,7 @@ const UploadPage = () => {
             {uploading ? 'Uploading...converting...' : 'Upload Font & Convert'}
           </button>
         </form>
+        {/* Show upload message */}
         {message && <p className="upload-message">{message}</p>}
       </div>
     </div>

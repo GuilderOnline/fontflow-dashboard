@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import jsPDF from 'jspdf';
 import '../css/fontPreviewModal.css'; // Your custom CSS file
 
+// Modal component for font preview and PDF download
 const FontPreviewModal = ({ fontUrl, fontName, isOpen, onClose }) => {
+  // State for preview text and styling options
   const [previewText, setPreviewText] = useState('The quick brown fox jumps over the lazy dog');
   const [fontSize, setFontSize] = useState(36);
   const [textColor, setTextColor] = useState('#000000');
@@ -11,7 +13,7 @@ const FontPreviewModal = ({ fontUrl, fontName, isOpen, onClose }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
   const canvasRef = useRef();
 
-  // Load the font dynamically using FontFace
+  // Dynamically load the font using FontFace API when modal opens
   useEffect(() => {
     if (!isOpen || !fontUrl) return;
 
@@ -20,10 +22,11 @@ const FontPreviewModal = ({ fontUrl, fontName, isOpen, onClose }) => {
       document.fonts.add(loaded);
       setFontLoaded(true);
     }).catch((err) => {
-      console.error('❌ Font load error:', err);
+      console.error('Font load error:', err);
     });
   }, [fontUrl, fontName, isOpen]);
 
+  // Generate and download a PDF of the preview text using jsPDF
   const downloadAsPDF = () => {
     const doc = new jsPDF({
       orientation: 'portrait',
@@ -45,16 +48,21 @@ const FontPreviewModal = ({ fontUrl, fontName, isOpen, onClose }) => {
     doc.save(`${fontName}-preview.pdf`);
   };
 
+  // Don't render modal if not open
   if (!isOpen) return null;
 
   return (
+    // Modal overlay, closes modal when clicked outside content
     <div className="modal-overlay" onClick={onClose}>
+      {/* Modal content, stops propagation to prevent closing when clicking inside */}
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <h2>Font Preview: {fontName}</h2>
 
+        {/* Show loading message until font is loaded */}
         {!fontLoaded ? (
           <p>Loading font...</p>
         ) : (
+          // Textarea for previewing and editing text, styled with selected font and options
           <textarea
             className="preview-textarea"
             style={{
@@ -69,6 +77,7 @@ const FontPreviewModal = ({ fontUrl, fontName, isOpen, onClose }) => {
           />
         )}
 
+        {/* Controls for customizing font preview */}
         <div className="controls">
           <label>
             Font Size:
@@ -91,6 +100,7 @@ const FontPreviewModal = ({ fontUrl, fontName, isOpen, onClose }) => {
           </label>
         </div>
 
+        {/* Modal actions: Download PDF and Close */}
         <div className="modal-actions">
           <button onClick={downloadAsPDF}>Download PDF</button>
           <button onClick={onClose} className="close-btn">Close</button>

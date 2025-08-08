@@ -1,21 +1,20 @@
-// src/api/api.js
 import axios from "axios";
 
-// Detect API base depending on environment
+// Detect API base depending on environment (Vite, CRA, or fallback to localhost)
 const API_BASE_URL =
-  import.meta.env?.VITE_API_BASE || // ✅ Vite-style env var (works on Vercel)
-  process.env?.REACT_APP_API_BASE || // ✅ CRA-style env var (works locally)
-  "http://localhost:4000/api"; // ✅ fallback for local dev
+  import.meta.env?.VITE_API_BASE || // Vite-style env var (works on Vercel)
+  process.env?.REACT_APP_API_BASE || // CRA-style env var (works locally)
+  "http://localhost:4000/api"; // fallback for local dev
 
-// Create an axios instance so we don't repeat headers/baseURL
+// Create an axios instance with default baseURL and headers
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "x-api-key": "fontflow-API-123", // static API key if required
   },
 });
-// redeploy trigger
 
+// Fetch fonts from API, passing JWT token for authentication
 export const getFonts = async (token) => {
   const res = await api.get("/fonts", {
     headers: {
@@ -25,6 +24,7 @@ export const getFonts = async (token) => {
   return res.data;
 };
 
+// Login request to API, returns auth data (JWT, etc.)
 export const login = async (email, password) => {
   const res = await api.post("/auth/login", { email, password });
   return res.data;
