@@ -5,8 +5,6 @@ import UploadPage from './pages/UploadPage';
 import LoginPage from './pages/LoginPage';
 import { useAuth } from './context/AuthContext';
 import ProjectsPage from './pages/ProjectsPage';
-import APIKeysPage from './pages/APIKeysPage';
-import SettingsPage from './pages/SettingsPage';
 
 // Main App component with routing logic
 function App() {
